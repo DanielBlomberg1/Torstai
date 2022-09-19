@@ -2,7 +2,6 @@ import { Client } from "discord.js";
 import { getVoiceConnection } from "@discordjs/voice";
 export default (client: Client): void => {
     client.on('voiceStateUpdate', (oldState, newState) => {
-        console.log("voicestate");
         if (oldState.channelId !==  oldState.guild.members.me?.voice.channelId || newState.channel || oldState?.channel?.members.size === null){ return;}
         
         const oldChannelSize = oldState?.channel?.members.size as number;
