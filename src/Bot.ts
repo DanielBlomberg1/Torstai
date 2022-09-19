@@ -2,6 +2,7 @@ import { Client, ClientOptions } from "discord.js";
 import ready from "./listeners/ready";
 import interaction from "./listeners/interaction";
 import dotenv from 'dotenv';
+import voiceState from "./listeners/voiceState";
 
 dotenv.config();
 
@@ -17,5 +18,6 @@ const client = new Client({
 
 ready(client);
 interaction(client);
+voiceState(client);
 
 client.login(token);
