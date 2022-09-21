@@ -2,13 +2,11 @@ import { Client } from "discord.js";
 import { getVoiceConnection } from "@discordjs/voice";
 export default (client: Client): void => {
     client.on('voiceStateUpdate', (oldState, newState) => {
-        if (oldState.channelId !==  oldState.guild.members.me?.voice.channelId || newState.channel || oldState?.channel?.members.size === null){ return;}
-        
-        const oldChannelSize = oldState?.channel?.members.size as number;
+        const newChannelSz = newState?.guild?.members?.me?.voice?.channel?.members.size as number;
 
-        if ((oldChannelSize <= 1)){
+        if ((newChannelSz <= 1)){
             setTimeout(() => { // if 1 remain, wait five minutes
-                if ((oldChannelSize <= 1)){
+                if ((newChannelSz <= 1)){
                     getVoiceConnection(oldState.guild.id)?.destroy(); // leave
                     console.log("disconnected due to inactivity on guild " + oldState.guild.id);
                 }
