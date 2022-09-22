@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits, Guild, TextChannel } from "discord.js";
+import { Client, GatewayIntentBits } from "discord.js";
 import ready from "./listeners/ready";
 import interaction from "./listeners/interaction";
 import dotenv from "dotenv";

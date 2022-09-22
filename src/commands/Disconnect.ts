@@ -7,7 +7,6 @@ export const Disconnect: Command = {
     description: "disconnect bot from its current voicechannel",
     type: ApplicationCommandType.ChatInput,
     run: async (client: Client, interaction: CommandInteraction) => {
-        const channel = interaction.options.data[0];
 
         // voiceconnection.disconnect doesnt work need to use .destory lols
         getVoiceConnection(interaction.guild?.id as string)?.destroy();

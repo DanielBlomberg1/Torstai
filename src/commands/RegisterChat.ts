@@ -6,8 +6,6 @@ import {
   ApplicationCommandOptionType,
   ChannelType,
 } from "discord.js";
-import fs from "fs";
-import { getVoiceConnection } from "@discordjs/voice";
 import { Command } from "../Command";
 
 export const RegisterChannel: Command = {
@@ -23,17 +21,8 @@ export const RegisterChannel: Command = {
       channel_types: [ChannelType.GuildText],
     } as ApplicationCommandOptionData,
   ],
-  run: async (client: Client, interaction: CommandInteraction) => {
-    /*
-    fs.writeFile(
-      "./chatchannels.txt",
-      interaction.options.data[0]?.channel?.id as string,
-      (err) => {
-        if (err) throw err;
-        console.log("The file has been saved!");
-      }
-    );
-    */
+  run: async (_client: Client, interaction: CommandInteraction) => {
+
     globalThis.mainTextChannel = interaction?.options?.data[0]?.channel?.id ?? "";
 
     const content = "success";
