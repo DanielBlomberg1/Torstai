@@ -1,4 +1,4 @@
-import { Client, ClientOptions, GatewayIntentBits, Channel, Guild, TextChannel } from "discord.js";
+import { Client, GatewayIntentBits, Guild, TextChannel } from "discord.js";
 import ready from "./listeners/ready";
 import interaction from "./listeners/interaction";
 import dotenv from "dotenv";
@@ -10,7 +10,10 @@ dotenv.config();
 
 const token = process.env.BOT_TOKEN;
 
-let listOfDefaultChatChannels = new Map<Guild, TextChannel>();
+declare global {
+    var mainTextChannel : string;
+}
+
 
 console.log("----------------------");
 console.log("-- Torstai Starting --");
@@ -28,6 +31,6 @@ ready(client);
 interaction(client);
 voiceState(client);
 addSpeechEvent(client, {lang: "fi-FI"});
-speaking(client, listOfDefaultChatChannels);
+speaking(client);
 
 client.login(token);
