@@ -23,6 +23,7 @@ export const JoinVC: Command = {
                 channelId: String(channel?.channel?.id),
                 guildId: interaction.guild?.id as string,
                 adapterCreator: interaction.guild?.voiceAdapterCreator as InternalDiscordGatewayAdapterCreator,
+                selfDeaf: false,
             }
         )
 
