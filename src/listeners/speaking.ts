@@ -22,7 +22,7 @@ export default (client: Client): void => {
         );
       }
       msg.author.send("error please register channel first with /register command");
-    }else if(msg.content.startsWith("Skippaa")){
+    }else if(msg.content.startsWith("Skippaa") || msg.content.startsWith("kippaa")){
         let whatToPlay = msg.content.replace("Skippaa", commandPrefix + " skip");
         let channel = client.channels.cache.get(globalThis.mainTextChannel) as TextChannel;
         if (typeof channel !== "undefined") {

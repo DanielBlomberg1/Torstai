@@ -5,4 +5,4 @@ import { Command } from "./Command";
 import { Test } from "./commands/TestCommand";
 import { Record } from './commands/Record';
 
-export const Commands: Command[] = [Test, JoinVC, Disconnect, Record, RegisterChannel];
+export const Commands: Command[] = [Test, JoinVC, Disconnect, RegisterChannel];
