@@ -1,5 +1,5 @@
 import { CommandInteraction, Client, ApplicationCommandType, ChannelType, ApplicationCommandOptionData, ApplicationCommandOptionType, VoiceChannel, InternalDiscordGatewayAdapterCreator } from "discord.js";
-import { joinVoiceChannel } from "@discordjs/voice";
+import { getVoiceConnection, joinVoiceChannel, VoiceConnectionStatus } from "@discordjs/voice";
 import { Command } from "../Command";
 
 export const JoinVC: Command = {
@@ -25,6 +25,11 @@ export const JoinVC: Command = {
                 adapterCreator: interaction.guild?.voiceAdapterCreator as InternalDiscordGatewayAdapterCreator,
             }
         )
+
+        const connection = getVoiceConnection(interaction?.guild?.id as string);
+        connection?.on('speaking' as VoiceConnectionStatus, async (user : any, speaking : any)=>{
+            console.log("speaking");
+        })
         
         const content = "Joined voice channel!";
 

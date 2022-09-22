@@ -37,6 +37,7 @@ export function createListeningStream(receiver: VoiceReceiver, userId: string, u
 			console.warn(`❌ Error recording file ${filename} - ${err.message}`);
 		} else {
 			console.log(`✅ Recorded ${filename}`);
+			createListeningStream(receiver, userId, user);
 		}
 	});
 }

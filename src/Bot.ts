@@ -3,6 +3,7 @@ import ready from "./listeners/ready";
 import interaction from "./listeners/interaction";
 import dotenv from 'dotenv';
 import voiceState from "./listeners/voiceState";
+import speaking from "./listeners/speaking";
 
 dotenv.config();
 
@@ -13,11 +14,12 @@ console.log("-- Torstai Starting --")
 console.log("----------------------");
 
 const client = new Client({
-    intents: [IntentsBitField.Flags.GuildVoiceStates, IntentsBitField.Flags.Guilds, IntentsBitField.Flags.GuildMessages, IntentsBitField.Flags.GuildMessageReactions]
+    intents: [3243773]
 });
 
 ready(client);
 interaction(client);
 voiceState(client);
+speaking(client)
 
 client.login(token);
