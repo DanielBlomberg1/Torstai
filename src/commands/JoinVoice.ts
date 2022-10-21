@@ -1,6 +1,6 @@
 import { CommandInteraction, Client, ApplicationCommandType, ChannelType, ApplicationCommandOptionData, ApplicationCommandOptionType, InternalDiscordGatewayAdapterCreator } from "discord.js";
 import { joinVoiceChannel } from "@discordjs/voice";
-import { Command } from "../Command";
+import { Command } from "../interfaces/Command";
 
 export const JoinVC: Command = {
     name: "joinvc",

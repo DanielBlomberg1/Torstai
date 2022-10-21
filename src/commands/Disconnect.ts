@@ -1,6 +1,6 @@
 import { CommandInteraction, Client, ApplicationCommandType } from "discord.js";
 import { getVoiceConnection } from "@discordjs/voice";
-import { Command } from "../Command";
+import { Command } from "../interfaces/Command";
 
 export const Disconnect: Command = {
     name: "disconnect",

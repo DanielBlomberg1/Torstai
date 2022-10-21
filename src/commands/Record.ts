@@ -6,7 +6,7 @@ import {
   Snowflake,
 } from "discord.js";
 import { createListeningStream } from "../audio/createListeningStream";
-import { Command } from "../Command";
+import { Command } from "../interfaces/Command";
 
 export const Record: Command = {
   name: "record",

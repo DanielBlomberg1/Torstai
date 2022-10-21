@@ -1,7 +1,7 @@
 import { RegisterChannel } from './commands/RegisterChat';
 import { JoinVC } from './commands/JoinVoice';
 import { Disconnect } from './commands/Disconnect';
-import { Command } from "./Command";
+import { Command } from "./interfaces/Command";
 import { Test } from "./commands/TestCommand";
 import { Record } from './commands/Record';
 

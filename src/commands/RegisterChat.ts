@@ -6,7 +6,7 @@ import {
   ApplicationCommandOptionType,
   ChannelType,
 } from "discord.js";
-import { Command } from "../Command";
+import { Command } from "../interfaces/Command";
 
 export const RegisterChannel: Command = {
   name: "register",
