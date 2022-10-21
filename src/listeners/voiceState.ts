@@ -1,16 +1,65 @@
-import { Client } from "discord.js";
-import { getVoiceConnection } from "@discordjs/voice";
+import { Client, InternalDiscordGatewayAdapterCreator } from "discord.js";
+import { getVoiceConnection, joinVoiceChannel } from "@discordjs/voice";
+
+
 export default (client: Client): void => {
     client.on('voiceStateUpdate', (oldState, newState) => {
         let c = getVoiceConnection(newState.guild.id);
-        let sz = newState.channel?.members.size as number;
 
-        if ((oldState.channel != newState.channel)){
-            if(c && sz < 2){
-                c.destroy();
-                console.log("nobody here... disconnecting...")
+        // if bot not in voice and somebody joins voice
+        if(!c){
+            let size = 0;
+            let curId = "";
+
+            // join channel with most users
+            newState.guild.channels.cache.forEach(c => {
+                if(c.isVoiceBased() && c.joinable && c.members.size > size){
+                    size = c.members.size;
+                    curId = c.id;
+                }
+            });
+            if(curId != ""){
+                joinVoiceChannel(
+                    {
+                        channelId: curId,
+                        guildId: newState.guild.id as string,
+                        adapterCreator: newState.guild?.voiceAdapterCreator as InternalDiscordGatewayAdapterCreator,
+                        selfDeaf: false,
+                    }
+                )
+                c = getVoiceConnection(newState.guild.id);
             }
-        };     
+        }
+        if(!c){return;}
+
+        const oldSz = oldState.channel?.members.size as number;
+        const newSz = newState.channel?.members.size as number;
+
+        let isBotOnOldChannel = false;
+
+        oldState.channel?.members.forEach((e)=>{
+            if(e.id === process.env.BOT_ID){
+                isBotOnOldChannel = true;
+            }
+        })
+
+        let isBotOnNewChannel = false;
+
+        newState.channel?.members.forEach((e)=>{
+            if(e.id === process.env.BOT_ID){
+                isBotOnNewChannel = true;
+            }
+        })
+
+        // console.log("oldchannel:" + (isBotOnOldChannel && oldSz < 2) , "newchannel:" + (isBotOnNewChannel && newSz < 2))
+        // console.log("oldsize: " + oldSz, "newsize: " + newSz);
+
+        if(oldState.channel != newState.channel){
+            if((isBotOnOldChannel && oldSz < 2) || (isBotOnNewChannel && newSz < 2)){
+                c.destroy();
+                console.log("nobody here... disconnecting...");
+            }
+        }    
     });
 };
 
