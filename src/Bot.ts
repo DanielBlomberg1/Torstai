@@ -31,7 +31,7 @@ const client = new Client({
 ready(client);
 interaction(client);
 voiceState(client);
-addSpeechEvent(client, {lang: "fi-FI"});
+addSpeechEvent(client, {lang: "fi-FI", profanityFilter: false});
 speaking(client);
 
 client.login(token);
