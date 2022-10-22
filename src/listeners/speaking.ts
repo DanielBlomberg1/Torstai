@@ -1,8 +1,10 @@
 import { VoiceMessage } from "discord-speech-recognition";
-import { Client, TextChannel } from "discord.js";
+import { Client, Guild, TextChannel } from "discord.js";
 import { Print } from "../utils/Print";
 
-let commandPrefix = ":D";
+export const getPrefix = (g: Guild) => {
+  return global.mainTextChannels.get(g.id)?.commandPrefix as string || ":D";
+} 
 
 const tryToSend = (channel: TextChannel,msg : string, author: VoiceMessage) => {
   if (typeof channel !== "undefined") {
@@ -24,9 +26,9 @@ const runCommand = (
   if (msg.content?.toLowerCase().startsWith(word.toLowerCase())) {
     let whatWrite = msg.content?.replace(
       word,
-      commandPrefix + " " + getsReplacedBy
+      getPrefix(msg.guild) + " " + getsReplacedBy
     );
-    const chatChannel = global.mainTextChannels.get(msg.guild.id) as string;
+    const chatChannel = global.mainTextChannels.get(msg.guild.id)?.outputChannelId as string;
 
     if(chatChannel){
       let channel = client.channels.cache.get(
@@ -43,9 +45,9 @@ const runCommandSimple = (
   msg: VoiceMessage
 ) => {
   if (msg.content?.toLowerCase().startsWith(word.toLowerCase())) {
-    let whatWrite = commandPrefix + " " + printsCommand;
+    let whatWrite = getPrefix(msg.guild) + " " + printsCommand;
 
-    const chatChannel = global.mainTextChannels.get(msg.guild.id) as string;
+    const chatChannel = global.mainTextChannels.get(msg.guild.id)?.outputChannelId as string;
 
     if(chatChannel){
       let channel = client.channels.cache.get(

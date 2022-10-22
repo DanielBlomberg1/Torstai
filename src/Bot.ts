@@ -6,14 +6,16 @@ import voiceState from "./listeners/voiceState";
 import speaking from "./listeners/speaking";
 import { addSpeechEvent } from "discord-speech-recognition";
 import { LoadData } from "./utils/LoadData";
+import { ServerConfig } from "./interfaces/ServerConfig";
 
 dotenv.config();
 
 const token = process.env.BOT_TOKEN;
 
+
 // TODO make array and save locally somewhere
 declare global {
-  var mainTextChannels : Map<string, string>;
+  var mainTextChannels : Map<string, ServerConfig>;
 }
 
 globalThis.mainTextChannels = LoadData();

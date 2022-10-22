@@ -1,5 +1,6 @@
 import { joinVoiceChannel } from "@discordjs/voice";
 import { Client, Guild, InternalDiscordGatewayAdapterCreator } from "discord.js";
+import { Print } from "../utils/Print";
 import { Commands } from "../Commands";
 
 export default (client: Client): void => {
@@ -8,17 +9,22 @@ export default (client: Client): void => {
             return;
         }
 
+        Print(`${client.user.username} has come online`);
+
+
         await client.application.commands.set(Commands);
 
         client.guilds.cache.forEach((g : Guild)=>{
             // temp vars
             let size = 0;
             let curId = "";
+            let curName = ""
 
             g.channels.cache.forEach(c => {
                 if(c.isVoiceBased() && c.joinable && c.members.size > size){
                     size = c.members.size;
                     curId = c.id;
+                    curName = c.name;
                 }
             });
             if(curId != ""){
@@ -30,10 +36,8 @@ export default (client: Client): void => {
                         selfDeaf: false,
                     }
                 )
+                Print("Joined voicechannel "+ curName+ " on server " + g.name + " because it has a size of " + size );
             }
         })
-       
-        
-        console.log(`${client.user.username} has come online`);
     });
 };
