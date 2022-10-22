@@ -52,7 +52,7 @@ export const Configure: Command = {
       interaction.guild?.name +
       "\n" +
       "and added the default music bot prefix " +
-      commandPrefix;
+      commandPrefix?.value;
 
     Print(interaction.member?.user.username + ": " + content);
 
