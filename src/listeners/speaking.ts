@@ -3,19 +3,25 @@ import { Client, Guild, TextChannel } from "discord.js";
 import { Print } from "../utils/Print";
 
 export const getPrefix = (g: Guild) => {
-  return global.mainTextChannels.get(g.id)?.commandPrefix as string || ":D";
-} 
+  return (global.mainTextChannels.get(g.id)?.commandPrefix as string) || ":D";
+};
 
-const tryToSend = (channel: TextChannel,msg : string, author: VoiceMessage) => {
+const tryToSend = (channel: TextChannel, msg: string, author: VoiceMessage) => {
   if (typeof channel !== "undefined") {
     channel.send(msg);
   } else {
-    Print("On server: " + author.guild.name + " : error writing to text channel please register channel first with /register command");
+    Print(
+      "On server: " +
+        author.guild.name +
+        " : error writing to text channel please register channel first with /register command"
+    );
     author.author.send(
-      "On server: " + author.guild.name + " : error please register channel first with /register command"
+      "On server: " +
+        author.guild.name +
+        " : error please register channel first with /register command"
     );
   }
-}
+};
 
 const runCommand = (
   client: Client,
@@ -28,14 +34,13 @@ const runCommand = (
       word,
       getPrefix(msg.guild) + " " + getsReplacedBy
     );
-    const chatChannel = global.mainTextChannels.get(msg.guild.id)?.outputChannelId as string;
+    const chatChannel = global.mainTextChannels.get(msg.guild.id)
+      ?.outputChannelId as string;
 
-    if(chatChannel){
-      let channel = client.channels.cache.get(
-        chatChannel
-      ) as TextChannel;
+    if (chatChannel) {
+      let channel = client.channels.cache.get(chatChannel) as TextChannel;
       tryToSend(channel, whatWrite, msg);
-    }  
+    }
   }
 };
 const runCommandSimple = (
@@ -47,14 +52,13 @@ const runCommandSimple = (
   if (msg.content?.toLowerCase().startsWith(word.toLowerCase())) {
     let whatWrite = getPrefix(msg.guild) + " " + printsCommand;
 
-    const chatChannel = global.mainTextChannels.get(msg.guild.id)?.outputChannelId as string;
+    const chatChannel = global.mainTextChannels.get(msg.guild.id)
+      ?.outputChannelId as string;
 
-    if(chatChannel){
-      let channel = client.channels.cache.get(
-        chatChannel
-      ) as TextChannel;
+    if (chatChannel) {
+      let channel = client.channels.cache.get(chatChannel) as TextChannel;
       tryToSend(channel, whatWrite, msg);
-    }  
+    }
   }
 };
 

@@ -28,21 +28,31 @@ export const Configure: Command = {
       description: "Command Prefix for your primary bot",
       required: true,
       type: ApplicationCommandOptionType.String,
-    }
-  ]as ApplicationCommandOptionData[],
+    },
+  ] as ApplicationCommandOptionData[],
   run: async (_client: Client, interaction: CommandInteraction) => {
     const guildId: string | undefined = interaction.guild?.id;
-    const channelId: string | undefined = interaction.options.data[0].channel?.id
+    const channelId: string | undefined =
+      interaction.options.data[0].channel?.id;
     const commandPrefix = interaction.options.get("commandprefix");
 
-    if(guildId && channelId){
-      global.mainTextChannels.set(guildId, {outputChannelId: channelId, commandPrefix: commandPrefix?.value} as ServerConfig);
+    if (guildId && channelId) {
+      global.mainTextChannels.set(guildId, {
+        outputChannelId: channelId,
+        commandPrefix: commandPrefix?.value,
+      } as ServerConfig);
     }
-    
+
     writeToFile();
-    
-    const content = 'Added textchannel '+ interaction?.options?.data[0]?.channel?.name + ' as default outputchannel for server : ' + interaction.guild?.name +"\n"
-    + "and added the default music bot prefix " + commandPrefix;
+
+    const content =
+      "Added textchannel " +
+      interaction?.options?.data[0]?.channel?.name +
+      " as default outputchannel for server : " +
+      interaction.guild?.name +
+      "\n" +
+      "and added the default music bot prefix " +
+      commandPrefix;
 
     Print(interaction.member?.user.username + ": " + content);
 

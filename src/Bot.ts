@@ -12,10 +12,9 @@ dotenv.config();
 
 const token = process.env.BOT_TOKEN;
 
-
 // TODO make array and save locally somewhere
 declare global {
-  var mainTextChannels : Map<string, ServerConfig>;
+  var mainTextChannels: Map<string, ServerConfig>;
 }
 
 globalThis.mainTextChannels = LoadData();
@@ -35,7 +34,7 @@ const client = new Client({
 ready(client);
 interaction(client);
 voiceState(client);
-addSpeechEvent(client, {lang: "fi-FI", profanityFilter: false});
+addSpeechEvent(client, { lang: "fi-FI", profanityFilter: false });
 speaking(client);
 
 client.login(token);
