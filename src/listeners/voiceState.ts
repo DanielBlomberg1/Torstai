@@ -43,14 +43,19 @@ export default (client: Client): void => {
       return;
     }
 
-    const oldSz = oldState.channel?.members.size as number;
-    const newSz = newState.channel?.members.size as number;
+    const oldSz: number = oldState.channel?.members.size as number;
+    const newSz: number = newState.channel?.members.size as number;
+    let oldBots: number = 0;
+    let newBotz: number = 0;
 
     let isBotOnOldChannel = false;
 
     oldState.channel?.members.forEach((e) => {
       if (e.id === process.env.BOT_ID) {
         isBotOnOldChannel = true;
+      }
+      if (e.user.bot) {
+        oldBots++;
       }
     });
 
@@ -59,6 +64,9 @@ export default (client: Client): void => {
     newState.channel?.members.forEach((e) => {
       if (e.id === process.env.BOT_ID) {
         isBotOnNewChannel = true;
+      }
+      if (e.user.bot) {
+        newBotz++;
       }
     });
 
@@ -72,6 +80,12 @@ export default (client: Client): void => {
       ) {
         c.destroy();
         Print("nobody here... disconnecting...");
+      } else if (
+        (isBotOnOldChannel && oldSz === oldBots) ||
+        (isBotOnNewChannel && newSz === newBotz)
+      ) {
+        c.destroy();
+        Print("Only bots here... disconnecting...");
       }
     }
   });
