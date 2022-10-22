@@ -6,9 +6,10 @@ export default (client: Client): void => {
   client.on("voiceStateUpdate", (oldState, newState) => {
     const botId = client.user?.id as string;
     let c = getVoiceConnection(newState.guild.id);
+    const boolean = globalThis.mainTextChannels.get(newState.guild.id)?.autoJoin || true;
 
     // if bot not in voice and somebody joins voice
-    if (!c) {
+    if (!c && boolean) {
       let size = 0;
       let curId = "";
       let curName = "";

@@ -29,17 +29,25 @@ export const Configure: Command = {
       required: true,
       type: ApplicationCommandOptionType.String,
     },
+    {
+      name: "autojoin",
+      description: "Whether you want the bot to follow people",
+      required: true,
+      type: ApplicationCommandOptionType.Boolean,
+    },
   ] as ApplicationCommandOptionData[],
   run: async (_client: Client, interaction: CommandInteraction) => {
     const guildId: string | undefined = interaction.guild?.id;
     const channelId: string | undefined =
       interaction.options.data[0].channel?.id;
     const commandPrefix = interaction.options.get("commandprefix");
+    const boolean = interaction.options.get("autojoin")?.value;
 
     if (guildId && channelId) {
       global.mainTextChannels.set(guildId, {
         outputChannelId: channelId,
-        commandPrefix: commandPrefix?.value,
+        commandPrefix: commandPrefix?.value, 
+        autoJoin: boolean,
       } as ServerConfig);
     }
 
