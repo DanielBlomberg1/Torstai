@@ -1,5 +1,6 @@
 import { VoiceMessage } from "discord-speech-recognition";
 import { Client, TextChannel } from "discord.js";
+import { Print } from "../utils/Print";
 
 let commandPrefix = ":D";
 
@@ -7,9 +8,9 @@ const tryToSend = (channel: TextChannel,msg : string, author: VoiceMessage) => {
   if (typeof channel !== "undefined") {
     channel.send(msg);
   } else {
-    console.log("error please register channel first with /register command");
+    Print("On server: " + author.guild.name + " : error writing to text channel please register channel first with /register command");
     author.author.send(
-      "error please register channel first with /register command"
+      "On server: " + author.guild.name + " : error please register channel first with /register command"
     );
   }
 }
@@ -68,6 +69,6 @@ export default (client: Client): void => {
 
     //implement jail for badwords
 
-    console.log(msg.content);
+    Print(msg.author.username + ": " + msg.content);
   });
 };

@@ -1,5 +1,6 @@
 import { Client, InternalDiscordGatewayAdapterCreator } from "discord.js";
 import { getVoiceConnection, joinVoiceChannel } from "@discordjs/voice";
+import { Print } from "../utils/Print";
 
 
 export default (client: Client): void => {
@@ -10,12 +11,14 @@ export default (client: Client): void => {
         if(!c){
             let size = 0;
             let curId = "";
+            let curName = "";
 
             // join channel with most users
             newState.guild.channels.cache.forEach(c => {
                 if(c.isVoiceBased() && c.joinable && c.members.size > size){
                     size = c.members.size;
                     curId = c.id;
+                    curName = c.name;
                 }
             });
             if(curId != ""){
@@ -27,6 +30,7 @@ export default (client: Client): void => {
                         selfDeaf: false,
                     }
                 )
+                Print("Joined voicechannel "+ curName+ " on server " + newState.guild.name + "because it has a size of " + size );
                 c = getVoiceConnection(newState.guild.id);
             }
         }
@@ -57,7 +61,7 @@ export default (client: Client): void => {
         if(oldState.channel != newState.channel){
             if((isBotOnOldChannel && oldSz < 2) || (isBotOnNewChannel && newSz < 2)){
                 c.destroy();
-                console.log("nobody here... disconnecting...");
+                Print("nobody here... disconnecting...");
             }
         }    
     });

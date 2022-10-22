@@ -7,6 +7,7 @@ import {
   ChannelType,
 } from "discord.js";
 import fs from "fs"
+import { Print } from "../utils/Print";
 import { Command } from "../interfaces/Command";
 
 export const RegisterChannel: Command = {
@@ -35,8 +36,7 @@ export const RegisterChannel: Command = {
 
     fs.writeFile('./data.json', data, function (err: any) {
       if (err) {
-        console.log('There was an error saving textChannels');
-        console.log(err.message);
+        Print('There was an error saving textChannels');
         return;
       }
     });
