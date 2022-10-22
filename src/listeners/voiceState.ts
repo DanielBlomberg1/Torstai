@@ -4,6 +4,7 @@ import { Print } from "../utils/Print";
 
 export default (client: Client): void => {
   client.on("voiceStateUpdate", (oldState, newState) => {
+    const botId = client.user?.id as string;
     let c = getVoiceConnection(newState.guild.id);
 
     // if bot not in voice and somebody joins voice
@@ -51,7 +52,7 @@ export default (client: Client): void => {
     let isBotOnOldChannel = false;
 
     oldState.channel?.members.forEach((e) => {
-      if (e.id === process.env.BOT_ID) {
+      if (e.id === botId) {
         isBotOnOldChannel = true;
       }
       if (e.user.bot) {
@@ -62,7 +63,7 @@ export default (client: Client): void => {
     let isBotOnNewChannel = false;
 
     newState.channel?.members.forEach((e) => {
-      if (e.id === process.env.BOT_ID) {
+      if (e.id === botId) {
         isBotOnNewChannel = true;
       }
       if (e.user.bot) {
