@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import voiceState from "./listeners/voiceState";
 import speaking from "./listeners/speaking";
 import { addSpeechEvent } from "discord-speech-recognition";
+import { LoadData } from "./utils/LoadData";
 
 dotenv.config();
 
@@ -12,9 +13,10 @@ const token = process.env.BOT_TOKEN;
 
 // TODO make array and save locally somewhere
 declare global {
-    var mainTextChannel : string;
+  var mainTextChannels : Map<string, string>;
 }
 
+globalThis.mainTextChannels = LoadData();
 
 console.log("----------------------");
 console.log("-- Torstai Starting --");

@@ -25,11 +25,14 @@ const runCommand = (
       word,
       commandPrefix + " " + getsReplacedBy
     );
-    let channel = client.channels.cache.get(
-      globalThis.mainTextChannel
-    ) as TextChannel;
-    tryToSend(channel, whatWrite, msg);
-    
+    const chatChannel = global.mainTextChannels.get(msg.guild.id) as string;
+
+    if(chatChannel){
+      let channel = client.channels.cache.get(
+        chatChannel
+      ) as TextChannel;
+      tryToSend(channel, whatWrite, msg);
+    }  
   }
 };
 const runCommandSimple = (
@@ -40,10 +43,15 @@ const runCommandSimple = (
 ) => {
   if (msg.content?.toLowerCase().startsWith(word.toLowerCase())) {
     let whatWrite = commandPrefix + " " + printsCommand;
-    let channel = client.channels.cache.get(
-      globalThis.mainTextChannel
-    ) as TextChannel;
-    tryToSend(channel, whatWrite, msg);
+
+    const chatChannel = global.mainTextChannels.get(msg.guild.id) as string;
+
+    if(chatChannel){
+      let channel = client.channels.cache.get(
+        chatChannel
+      ) as TextChannel;
+      tryToSend(channel, whatWrite, msg);
+    }  
   }
 };
 

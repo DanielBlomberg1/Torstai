@@ -6,6 +6,7 @@ import {
   ApplicationCommandOptionType,
   ChannelType,
 } from "discord.js";
+import fs from "fs"
 import { Command } from "../interfaces/Command";
 
 export const RegisterChannel: Command = {
@@ -22,10 +23,25 @@ export const RegisterChannel: Command = {
     } as ApplicationCommandOptionData,
   ],
   run: async (_client: Client, interaction: CommandInteraction) => {
+    const guildId: string | undefined = interaction.guild?.id;
+    const channelId: string | undefined = interaction.options.data[0].channel?.id;
 
-    globalThis.mainTextChannel = interaction?.options?.data[0]?.channel?.id ?? "";
+    if(guildId && channelId){
+      global.mainTextChannels.set(guildId, channelId);
+    }
+    
+    JSON.stringify(Object.fromEntries(global.mainTextChannels));
+    var data = JSON.stringify(Object.fromEntries(global.mainTextChannels));
 
-    const content = "success";
+    fs.writeFile('./data.json', data, function (err: any) {
+      if (err) {
+        console.log('There was an error saving textChannels');
+        console.log(err.message);
+        return;
+      }
+    });
+    
+    const content = 'Added textchannel '+ interaction?.options?.data[0]?.channel?.name + ' as default outputchannel for server : ' + interaction.guild?.name;
     await interaction.followUp({
       ephemeral: true,
       content,
