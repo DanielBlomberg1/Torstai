@@ -22,7 +22,7 @@ globalThis.mainTextChannels = LoadData();
 
 console.log("----------------------");
 console.log("-- Torstai Starting --");
-console.log("----------------------");
+console.log("----------------------\n");
 
 const client = new Client({
   intents: [
