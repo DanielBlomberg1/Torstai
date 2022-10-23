@@ -3,7 +3,7 @@ import { Client, Guild, TextChannel } from "discord.js";
 import { PlaySoundEffect } from "../audio/SoundEffectPlayer";
 import { Print } from "../utils/Print";
 
-const audioclips = ["pallit", "väärä savu", "among us", "drift", "imen sun", "kakka"];
+const audioclips = ["pallit", "väärä savu", "among us", "drift", "imen sun", "kakka", "skype", "windows", "hyvä fiilis", "McDonald's"];
 
 export const getPrefix = (g: Guild) => {
   return (global.mainTextChannels.get(g.id)?.commandPrefix as string) || ":D";
@@ -86,8 +86,20 @@ export default (client: Client): void => {
 
     audioCommands(msg);
 
+    timeBasedCommands(msg);
+
     //implement jail for badwords
 
     Print(msg.author.username + ": " + msg.content);
   });
 };
+
+
+const timeBasedCommands = (msg: VoiceMessage) => {
+  const d = new Date();
+
+  if(d.getHours() === 3 && d.getMinutes() === 0){
+    // TODO add some 3am sound effects maybe
+  }
+}
+
