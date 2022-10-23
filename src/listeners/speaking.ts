@@ -1,6 +1,9 @@
 import { VoiceMessage } from "discord-speech-recognition";
 import { Client, Guild, TextChannel } from "discord.js";
+import { PlaySoundEffect } from "../audio/SoundEffectPlayer";
 import { Print } from "../utils/Print";
+
+const audioclips = ["pallit", "väärä savu", "among us", "drift", "imen sun", "kakka"];
 
 export const getPrefix = (g: Guild) => {
   return (global.mainTextChannels.get(g.id)?.commandPrefix as string) || ":D";
@@ -62,6 +65,14 @@ const runCommandSimple = (
   }
 };
 
+const audioCommands = (msg: VoiceMessage) =>{
+  audioclips.forEach((clip : string)=>{
+    if(msg.content?.toLowerCase().includes(clip)){
+      PlaySoundEffect(msg.guild, "./public/" + clip+".mp3");
+    }
+  });
+}
+
 export default (client: Client): void => {
   client.on("speech", async (msg: VoiceMessage) => {
     // If bot didn't recognize speech, content will be empty
@@ -72,6 +83,8 @@ export default (client: Client): void => {
     runCommandSimple(client, "Banaani on", "skip", msg);
     runCommandSimple(client, "Skippaa", "skip", msg);
     runCommandSimple(client, "tyhjennä", "clear", msg);
+
+    audioCommands(msg);
 
     //implement jail for badwords
 
