@@ -1,6 +1,21 @@
 import { Client, InternalDiscordGatewayAdapterCreator } from "discord.js";
-import { getVoiceConnection, joinVoiceChannel } from "@discordjs/voice";
+import { getVoiceConnection, joinVoiceChannel, VoiceConnection } from "@discordjs/voice";
 import { Print } from "../utils/Print";
+import fs from "fs";
+
+const tempFile3AM = "./public/output.mp3";
+
+const selfDestruct = (c : VoiceConnection) =>{
+  c.destroy();
+  Print("Only bots here... disconnecting...");
+
+  if(fs.existsSync(tempFile3AM)){
+      console.log("DELETING FILE OUTPUT.mp3");
+      fs.unlinkSync(tempFile3AM);
+  }
+  
+}
+
 
 export default (client: Client): void => {
   client.on("voiceStateUpdate", (oldState, newState) => {
@@ -35,7 +50,7 @@ export default (client: Client): void => {
             curName +
             " on server " +
             newState.guild.name +
-            "because it has a size of " +
+            " because it has a size of " +
             size
         );
         c = getVoiceConnection(newState.guild.id);
@@ -72,22 +87,17 @@ export default (client: Client): void => {
       }
     });
 
-    // console.log("oldchannel:" + (isBotOnOldChannel && oldSz < 2) , "newchannel:" + (isBotOnNewChannel && newSz < 2))
-    // console.log("oldsize: " + oldSz, "newsize: " + newSz);
-
     if (oldState.channel != newState.channel) {
       if (
         (isBotOnOldChannel && oldSz < 2) ||
         (isBotOnNewChannel && newSz < 2)
       ) {
-        c.destroy();
-        Print("nobody here... disconnecting...");
+        selfDestruct(c);
       } else if (
         (isBotOnOldChannel && oldSz === oldBots) ||
         (isBotOnNewChannel && newSz === newBotz)
       ) {
-        c.destroy();
-        Print("Only bots here... disconnecting...");
+        selfDestruct(c);
       }
     }
   });

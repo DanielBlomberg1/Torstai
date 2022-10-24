@@ -1,12 +1,17 @@
 import { Client, GatewayIntentBits } from "discord.js";
+import { addSpeechEvent } from "discord-speech-recognition";
+import dotenv from "dotenv";
+
+// listeners
 import ready from "./listeners/ready";
 import interaction from "./listeners/interaction";
-import dotenv from "dotenv";
 import voiceState from "./listeners/voiceState";
-import speaking from "./listeners/speaking";
-import { addSpeechEvent } from "discord-speech-recognition";
+import speech from "./listeners/speech";
+
+// other stuff
 import { LoadData } from "./utils/LoadData";
 import { ServerConfig } from "./interfaces/ServerConfig";
+
 
 dotenv.config();
 
@@ -35,6 +40,6 @@ ready(client);
 interaction(client);
 voiceState(client);
 addSpeechEvent(client, { lang: "fi-FI", profanityFilter: false });
-speaking(client);
+speech(client);
 
 client.login(token);
