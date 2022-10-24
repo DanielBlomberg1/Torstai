@@ -3,7 +3,7 @@ import { Client, Guild, TextChannel } from "discord.js";
 import { PlaySoundEffect } from "../audio/SoundEffectPlayer";
 import { Print } from "../utils/Print";
 
-const audioclips = ["pallit", "väärä savu", "among us", "drift", "imen sun", "kakka", "skype", "windows", "hyvä fiilis", "McDonald's"];
+const audioclips = ["pallit", "väärä savu", "among us", "drift", "imen sun", "kakka", "skype", "windows", "hyvä fiilis", "Mäkkäri", "glizzy"];
 
 export const getPrefix = (g: Guild) => {
   return (global.mainTextChannels.get(g.id)?.commandPrefix as string) || ":D";
