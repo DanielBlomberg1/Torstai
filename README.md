@@ -24,3 +24,9 @@ DiscordJS bot, intended to be used with voice commands
 
 ## tyhjennä
 ###### calls the clear command of the music bot
+
+# Language Settings
+
+###### Default language detection is for Finnish 
+###### To change this go to src/Bot.ts and change it there to your preferred value eq. en_US
+###### Almost all commands are made with finnish in mind but some ones might with other languages too use with discretion
