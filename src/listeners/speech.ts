@@ -1,7 +1,7 @@
 import { VoiceMessage } from "discord-speech-recognition";
-import { Client, Guild, TextChannel } from "discord.js";
+import { Client, Guild, TextChannel, User } from "discord.js";
 
-import { PlaySoundEffect} from "../audio/SoundEffectPlayer";
+import { PlaySoundEffect } from "../audio/SoundEffectPlayer";
 import { Print } from "../utils/Print";
 import { audioclips, susaudioclips } from "../utils/audioclips";
 import { promisify } from "util";
@@ -16,18 +16,20 @@ export const getPrefix = (g: Guild) => {
   return (global.mainTextChannels.get(g.id)?.commandPrefix as string) || ":D";
 };
 
-const tryToSend = (channel: TextChannel, msg: string, author: VoiceMessage) => {
+const tryToSend = (channel: TextChannel, msg: string, author: User) => {
+  let name = channel.guild.name;
+
   if (typeof channel !== "undefined") {
     channel.send(msg);
   } else {
     Print(
       "On server: " +
-        author.guild.name +
+        name +
         " : error writing to text channel please register channel first with /register command"
     );
-    author.author.send(
+    author.send(
       "On server: " +
-        author.guild.name +
+        name +
         " : error please register channel first with /register command"
     );
   }
@@ -37,19 +39,18 @@ const runCommand = (
   client: Client,
   word: string,
   getsReplacedBy: string,
-  msg: VoiceMessage
+  msg: string,
+  guild: Guild,
+  author: User
 ) => {
-  if (msg.content?.toLowerCase().startsWith(word.toLowerCase())) {
-    let whatWrite = msg.content?.replace(
-      word,
-      getPrefix(msg.guild) + " " + getsReplacedBy
-    );
-    const chatChannel = global.mainTextChannels.get(msg.guild.id)
+  if (msg.toLowerCase().startsWith(word.toLowerCase())) {
+    let whatWrite = msg?.replace(word, getPrefix(guild) + " " + getsReplacedBy);
+    const chatChannel = global.mainTextChannels.get(guild.id)
       ?.outputChannelId as string;
 
     if (chatChannel) {
       let channel = client.channels.cache.get(chatChannel) as TextChannel;
-      tryToSend(channel, whatWrite, msg);
+      tryToSend(channel, whatWrite, author);
     }
   }
 };
@@ -57,17 +58,19 @@ const runCommandSimple = (
   client: Client,
   word: string,
   printsCommand: string,
-  msg: VoiceMessage
+  msg: string,
+  guild: Guild,
+  author: User
 ) => {
-  if (msg.content?.toLowerCase().startsWith(word.toLowerCase())) {
-    let whatWrite = getPrefix(msg.guild) + " " + printsCommand;
+  if (msg.toLowerCase().startsWith(word.toLowerCase())) {
+    let whatWrite = getPrefix(guild) + " " + printsCommand;
 
-    const chatChannel = global.mainTextChannels.get(msg.guild.id)
+    const chatChannel = global.mainTextChannels.get(guild.id)
       ?.outputChannelId as string;
 
     if (chatChannel) {
       let channel = client.channels.cache.get(chatChannel) as TextChannel;
-      tryToSend(channel, whatWrite, msg);
+      tryToSend(channel, whatWrite, author);
     }
   }
 };
@@ -85,11 +88,15 @@ export default (client: Client): void => {
     // If bot didn't recognize speech, content will be empty
     if (!msg.content) return;
 
+    const guild = msg.guild;
+    const message = msg.content[0].toUpperCase() + msg.content.substring(1);
+    const author = msg.author;
+
     // do some loop here idk its been too long
-    runCommand(client, "Soita", "play", msg);
-    runCommandSimple(client, "Banaani on", "skip", msg);
-    runCommandSimple(client, "Skippaa", "skip", msg);
-    runCommandSimple(client, "tyhjennä", "clear", msg);
+    runCommand(client, "Soita", "play", message, guild, author);
+    runCommandSimple(client, "Banaani on", "skip", message, guild, author);
+    runCommandSimple(client, "Skippaa", "skip", message, guild, author);
+    runCommandSimple(client, "Tyhjennä", "clear", message, guild, author);
 
     audioCommands(msg);
 
@@ -122,5 +129,5 @@ const timeBasedCommands = (msg: VoiceMessage) => {
         PlaySoundEffect(msg.guild, outputPath);
       });
     }
-  } 
+  }
 };
