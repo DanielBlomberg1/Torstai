@@ -2,16 +2,23 @@ import { Client, InternalDiscordGatewayAdapterCreator } from "discord.js";
 import { getVoiceConnection, joinVoiceChannel, VoiceConnection } from "@discordjs/voice";
 import { Print } from "../utils/Print";
 import fs from "fs";
+import { PlayerStopPlaying } from "../audio/SoundEffectPlayer";
 
 const tempFile3AM = "./public/output.mp3";
 
 const selfDestruct = (c : VoiceConnection) =>{
   c.destroy();
   Print("Only bots here... disconnecting...");
+  PlayerStopPlaying();
 
   if(fs.existsSync(tempFile3AM)){
-      console.log("DELETING FILE OUTPUT.mp3");
-      fs.unlinkSync(tempFile3AM);
+    
+      console.log("DELETING FILE OUTPUT.mp3...");
+
+      setTimeout(() =>{
+        fs.unlinkSync(tempFile3AM);
+        console.log("SUCCESSFULLY DELETED FILE OUTPUT.mp3");
+      }, 5000);
   }
   
 }

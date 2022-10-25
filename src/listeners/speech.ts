@@ -110,7 +110,7 @@ export default (client: Client): void => {
 
 const timeBasedCommands = (msg: VoiceMessage) => {
   const d = new Date();
-
+  
   if (d.getHours() === 3 && d.getMinutes() === 0) {
     // sus youtube file
     if (!fs.existsSync(outputPath) && !isDownloading) {
@@ -123,7 +123,7 @@ const timeBasedCommands = (msg: VoiceMessage) => {
         "-o",
         outputPath,
         susaudioclips[randomnumber],
-      ]).then((output) => {
+      ]).then(() => {
         Print("Downloaded Sus file at 3AM");
         isDownloading = false;
         PlaySoundEffect(msg.guild, outputPath);

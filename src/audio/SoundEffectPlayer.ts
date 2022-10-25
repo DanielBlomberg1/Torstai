@@ -17,3 +17,7 @@ export const PlayResource = (guild:Guild, resource: AudioResource)=>{
         c?.subscribe(player);
     }
 }
+
+export const PlayerStopPlaying = () => {
+    player.stop(true);    
+}
