@@ -12,7 +12,7 @@ interface Offences{
 }
 
 export enum OffenceType{
-    oral,
-    written,
-    other
+    oral = "verbal",
+    written = "written",
+    other = "other"
 }

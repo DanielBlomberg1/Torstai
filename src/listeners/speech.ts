@@ -1,12 +1,15 @@
 import { VoiceMessage } from "discord-speech-recognition";
 import { Client, Guild, TextChannel, User } from "discord.js";
-
-import { PlaySoundEffect } from "../audio/SoundEffectPlayer";
-import { Print } from "../utils/Print";
-import { audioclips, susaudioclips } from "../utils/audioclips";
 import { promisify } from "util";
 import { execFile } from "child_process";
 import fs from "fs";
+
+import { PlaySoundEffect } from "../audio/SoundEffectPlayer";
+
+import { Print } from "../utils/Print";
+import { audioclips, susaudioclips } from "../utils/audioclips";
+import CheckForBadWords from "../utils/CheckForBadWords";
+import { OffenceType } from "../interfaces/LeaderBoard";
 
 const execFile2 = promisify(execFile);
 const outputPath = "./public/output.mp3";
@@ -91,6 +94,8 @@ export default (client: Client): void => {
     const guild = msg.guild;
     const message = msg.content[0].toUpperCase() + msg.content.substring(1);
     const author = msg.author;
+
+    CheckForBadWords(msg.content, msg.author, OffenceType.oral);
 
     // do some loop here idk its been too long
     runCommand(client, "Soita", "play", message, guild, author);

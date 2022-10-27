@@ -44,7 +44,7 @@ export const Configure: Command = {
     const boolean = interaction.options.get("autojoin")?.value;
 
     if (guildId && channelId) {
-      global.mainTextChannels.set(guildId, {
+      global.serverConfig.set(guildId, {
         outputChannelId: channelId,
         commandPrefix: commandPrefix?.value, 
         autoJoin: boolean,

@@ -7,6 +7,7 @@ import ready from "./listeners/ready";
 import interaction from "./listeners/interaction";
 import voiceState from "./listeners/voiceState";
 import speech from "./listeners/speech";
+import onMessage from "./listeners/onMessage";
 
 // other stuff
 import { LoadData } from "./utils/LoadData";
@@ -35,6 +36,7 @@ const client = new Client({
     GatewayIntentBits.GuildVoiceStates,
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.Guilds,
+    GatewayIntentBits.MessageContent
   ],
 });
 
@@ -43,5 +45,6 @@ interaction(client);
 voiceState(client);
 addSpeechEvent(client, { lang: "fi-FI", profanityFilter: false });
 speech(client);
+onMessage(client);
 
 client.login(token);
