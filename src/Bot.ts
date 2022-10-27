@@ -11,15 +11,17 @@ import speech from "./listeners/speech";
 // other stuff
 import { LoadData } from "./utils/LoadData";
 import { ServerConfig } from "./interfaces/ServerConfig";
+import { LeaderBoards } from "./interfaces/LeaderBoard";
 
 
 dotenv.config();
 
 const token = process.env.BOT_TOKEN;
 
-// TODO make array and save locally somewhere
 declare global {
+  //where string == guildID
   var serverConfig: Map<string, ServerConfig>;
+  var leaderBoards: Map<string, LeaderBoards>
 }
 
 globalThis.serverConfig = LoadData();
