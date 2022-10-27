@@ -19,10 +19,10 @@ const token = process.env.BOT_TOKEN;
 
 // TODO make array and save locally somewhere
 declare global {
-  var mainTextChannels: Map<string, ServerConfig>;
+  var serverConfig: Map<string, ServerConfig>;
 }
 
-globalThis.mainTextChannels = LoadData();
+globalThis.serverConfig = LoadData();
 
 console.log("----------------------");
 console.log("-- Torstai Starting --");

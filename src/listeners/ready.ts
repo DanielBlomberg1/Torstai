@@ -18,7 +18,7 @@ export default (client: Client): void => {
     await client.application.commands.set(Commands);
 
     client.guilds.cache.forEach((g: Guild) => {
-      const boolean = globalThis.mainTextChannels.get(g.id)?.autoJoin || true;
+      const boolean = globalThis.serverConfig.get(g.id)?.autoJoin || true;
       if (boolean) {
         // temp vars
         let size = 0;

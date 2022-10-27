@@ -13,7 +13,7 @@ const outputPath = "./public/output.mp3";
 let isDownloading = false;
 
 export const getPrefix = (g: Guild) => {
-  return (global.mainTextChannels.get(g.id)?.commandPrefix as string) || ":D";
+  return (global.serverConfig.get(g.id)?.commandPrefix as string) || ":D";
 };
 
 const tryToSend = (channel: TextChannel, msg: string, author: User) => {
@@ -25,12 +25,12 @@ const tryToSend = (channel: TextChannel, msg: string, author: User) => {
     Print(
       "On server: " +
         name +
-        " : error writing to text channel please register channel first with /register command"
+        " : error writing to text channel please register channel first with /configure command"
     );
     author.send(
       "On server: " +
         name +
-        " : error please register channel first with /register command"
+        " : error please register channel first with /configure command"
     );
   }
 };
@@ -45,7 +45,7 @@ const runCommand = (
 ) => {
   if (msg.toLowerCase().startsWith(word.toLowerCase())) {
     let whatWrite = msg?.replace(word, getPrefix(guild) + " " + getsReplacedBy);
-    const chatChannel = global.mainTextChannels.get(guild.id)
+    const chatChannel = global.serverConfig.get(guild.id)
       ?.outputChannelId as string;
 
     if (chatChannel) {
@@ -65,7 +65,7 @@ const runCommandSimple = (
   if (msg.toLowerCase().startsWith(word.toLowerCase())) {
     let whatWrite = getPrefix(guild) + " " + printsCommand;
 
-    const chatChannel = global.mainTextChannels.get(guild.id)
+    const chatChannel = global.serverConfig.get(guild.id)
       ?.outputChannelId as string;
 
     if (chatChannel) {
@@ -110,7 +110,7 @@ export default (client: Client): void => {
 
 const timeBasedCommands = (msg: VoiceMessage) => {
   const d = new Date();
-  
+
   if (d.getHours() === 3 && d.getMinutes() === 0) {
     // sus youtube file
     if (!fs.existsSync(outputPath) && !isDownloading) {

@@ -28,7 +28,7 @@ export default (client: Client): void => {
   client.on("voiceStateUpdate", (oldState, newState) => {
     const botId = client.user?.id as string;
     let c = getVoiceConnection(newState.guild.id);
-    const boolean = globalThis.mainTextChannels.get(newState.guild.id)?.autoJoin || true;
+    const boolean = globalThis.serverConfig.get(newState.guild.id)?.autoJoin || true;
 
     // if bot not in voice and somebody joins voice
     if (!c && boolean) {
