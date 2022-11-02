@@ -3,8 +3,8 @@ DiscordJS bot, intended to be used with voice commands
 
 # How to install
 
-###### 1 create file data.json at root. insert empty object inside  {}
-###### 2 create .env file from .env.example with your discord api token
+###### 1 create .env file from .env.example with your discord api token
+###### 2 create mongodb cluster and get a connection token for .env file
 ###### 3 npm install
 ###### 4 npm start
 
