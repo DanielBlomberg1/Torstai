@@ -1,4 +1,5 @@
-import { Client, Guild, Message } from "discord.js";
+import { Client, Message } from "discord.js";
+import CheckForGoodWords from "../utils/CheckForGoodWords";
 import { OffenceEnum } from "../Database/schemas/usersmodel.types";
 import CheckForBadWords from "../utils/CheckForBadWords";
 
@@ -12,6 +13,8 @@ export default (client: Client): void => {
         msg.guild,
         OffenceEnum.written
       );
+
+      CheckForGoodWords(msg.content, msg.author, msg.guild);
     }
   });
 };
