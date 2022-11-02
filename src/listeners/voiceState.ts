@@ -1,35 +1,36 @@
+import { fetchAutoJoin } from "./../Database/Mongoose";
 import { Client, InternalDiscordGatewayAdapterCreator } from "discord.js";
-import { getVoiceConnection, joinVoiceChannel, VoiceConnection } from "@discordjs/voice";
+import {
+  getVoiceConnection,
+  joinVoiceChannel,
+  VoiceConnection,
+} from "@discordjs/voice";
 import { Print } from "../utils/Print";
 import fs from "fs";
 import { PlayerStopPlaying } from "../audio/SoundEffectPlayer";
 
 const tempFile3AM = "./public/output.mp3";
 
-const selfDestruct = (c : VoiceConnection) =>{
+const selfDestruct = (c: VoiceConnection) => {
   c.destroy();
   Print("Only bots here... disconnecting...");
   PlayerStopPlaying();
 
-  if(fs.existsSync(tempFile3AM)){
-    
-      console.log("DELETING FILE OUTPUT.mp3...");
+  if (fs.existsSync(tempFile3AM)) {
+    console.log("DELETING FILE OUTPUT.mp3...");
 
-      setTimeout(() =>{
-        fs.unlinkSync(tempFile3AM);
-        console.log("SUCCESSFULLY DELETED FILE OUTPUT.mp3");
-      }, 5000);
+    setTimeout(() => {
+      fs.unlinkSync(tempFile3AM);
+      console.log("SUCCESSFULLY DELETED FILE OUTPUT.mp3");
+    }, 5000);
   }
-  
-}
-
+};
 
 export default (client: Client): void => {
-  client.on("voiceStateUpdate", (oldState, newState) => {
+  client.on("voiceStateUpdate", async (oldState, newState) => {
     const botId = client.user?.id as string;
     let c = getVoiceConnection(newState.guild.id);
-    const boolean = globalThis.serverConfig.get(newState.guild.id)?.autoJoin || true;
-
+    let boolean = await fetchAutoJoin(newState.guild.id);
     // if bot not in voice and somebody joins voice
     if (!c && boolean) {
       let size = 0;

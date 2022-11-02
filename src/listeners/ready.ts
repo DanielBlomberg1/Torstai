@@ -1,3 +1,4 @@
+import { fetchAutoJoin } from "./../Database/Mongoose";
 import { joinVoiceChannel } from "@discordjs/voice";
 import {
   Client,
@@ -17,8 +18,8 @@ export default (client: Client): void => {
 
     await client.application.commands.set(Commands);
 
-    client.guilds.cache.forEach((g: Guild) => {
-      const boolean = globalThis.serverConfig.get(g.id)?.autoJoin || true;
+    client.guilds.cache.forEach(async (g: Guild) => {
+      const boolean = await fetchAutoJoin(g.id);
       if (boolean) {
         // temp vars
         let size = 0;
