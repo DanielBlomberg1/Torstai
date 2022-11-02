@@ -1,4 +1,4 @@
-import { fetchAutoJoin } from './../Database/Mongoose';
+import { fetchAutoJoin } from "./../Database/Mongoose";
 import { joinVoiceChannel } from "@discordjs/voice";
 import {
   Client,

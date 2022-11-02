@@ -1,4 +1,4 @@
-import { fetchPrefix, fetchTextChannel } from './../Database/Mongoose';
+import { fetchPrefix, fetchTextChannel } from "./../Database/Mongoose";
 import { VoiceMessage } from "discord-speech-recognition";
 import { Client, Guild, TextChannel, User } from "discord.js";
 import { promisify } from "util";
@@ -10,12 +10,11 @@ import { PlaySoundEffect } from "../audio/SoundEffectPlayer";
 import { Print } from "../utils/Print";
 import { audioclips, susaudioclips } from "../utils/audioclips";
 import CheckForBadWords from "../utils/CheckForBadWords";
-import { OffenceEnum } from "../interfaces/User";
+import { OffenceEnum } from "../Database/schemas/usersmodel.types";
 
 const execFile2 = promisify(execFile);
 const outputPath = "./public/output.mp3";
 let isDownloading = false;
-
 
 const tryToSend = (channel: TextChannel, msg: string, author: User) => {
   let name = channel.guild.name;
@@ -45,7 +44,10 @@ const runCommand = async (
   author: User
 ) => {
   if (msg.toLowerCase().startsWith(word.toLowerCase())) {
-    let whatWrite = msg?.replace(word, await fetchPrefix(guild.id) + " " + getsReplacedBy);
+    let whatWrite = msg?.replace(
+      word,
+      (await fetchPrefix(guild.id)) + " " + getsReplacedBy
+    );
     let chatChannel = await fetchTextChannel(guild.id);
     console.log("try to play", msg, word, whatWrite);
 
@@ -65,7 +67,7 @@ const runCommandSimple = async (
   author: User
 ) => {
   if (msg.toLowerCase().startsWith(word.toLowerCase())) {
-    let whatWrite = await fetchPrefix(guild.id) + " " + printsCommand;
+    let whatWrite = (await fetchPrefix(guild.id)) + " " + printsCommand;
     let chatChannel = await fetchTextChannel(guild.id);
 
     if (chatChannel) {
@@ -92,7 +94,12 @@ export default (client: Client): void => {
     const message = msg.content[0].toUpperCase() + msg.content.substring(1);
     const author = msg.author;
 
-    CheckForBadWords(msg.content.toLowerCase(), msg.author, msg.guild, OffenceEnum.oral);
+    CheckForBadWords(
+      msg.content.toLowerCase(),
+      msg.author,
+      msg.guild,
+      OffenceEnum.oral
+    );
 
     // do some loop here idk its been too long
     runCommand(client, "Soita", "play", message, guild, author);

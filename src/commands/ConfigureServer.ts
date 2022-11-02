@@ -44,7 +44,12 @@ export const Configure: Command = {
 
     // save into mongo
     if (guildId && channelId) {
-      await putConfiguration(guildId, channelId, commandPrefix?.value as string, boolean as boolean)
+      await putConfiguration(
+        guildId,
+        channelId,
+        commandPrefix?.value as string,
+        boolean as boolean
+      );
     }
     const content =
       "Added textchannel " +
