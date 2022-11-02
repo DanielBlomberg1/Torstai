@@ -1,9 +1,11 @@
-export interface LeaderBoards{
+export interface User{
+    guildId:String,
+    userId:String,
     Karma: Number,
     Offences: Offences[]
 }
 
-interface Offences{
+export interface Offences{
     offenceType: OffenceType,
     offenceDescription?: string,
     commitedOn: Date,
@@ -12,7 +14,7 @@ interface Offences{
 }
 
 export enum OffenceType{
-    oral = "verbal",
-    written = "written",
-    other = "other"
+    oral,
+    written,
+    other
 }

@@ -1,7 +1,7 @@
 import { User } from 'discord.js';
 import { en } from './en';
 import { fi } from './fi';
-import { OffenceType } from '../interfaces/LeaderBoard';
+import { OffenceType } from '../interfaces/User';
 import { Print } from './Print';
 
 export default async(msg: string, author: User, offenceType: OffenceType) => {

@@ -9,7 +9,7 @@ import { PlaySoundEffect } from "../audio/SoundEffectPlayer";
 import { Print } from "../utils/Print";
 import { audioclips, susaudioclips } from "../utils/audioclips";
 import CheckForBadWords from "../utils/CheckForBadWords";
-import { OffenceType } from "../interfaces/LeaderBoard";
+import { OffenceType } from "../interfaces/User";
 import { getConfigByGuildId } from "../schemas/serverconfig";
 
 const execFile2 = promisify(execFile);

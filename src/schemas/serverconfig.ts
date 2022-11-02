@@ -1,5 +1,3 @@
-
-
 import { Schema, model } from "mongoose";
 import { ServerConfig } from "../interfaces/ServerConfig";
 import { Print } from "../utils/Print";

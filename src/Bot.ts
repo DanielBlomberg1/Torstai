@@ -9,9 +9,6 @@ import voiceState from "./listeners/voiceState";
 import speech from "./listeners/speech";
 import onMessage from "./listeners/onMessage";
 
-// other stuff
-import { LeaderBoards } from "./interfaces/LeaderBoard";
-
 // db
 import { connect } from "mongoose"
 
@@ -19,11 +16,6 @@ dotenv.config();
 
 const token = process.env.BOT_TOKEN;
 const dbToken = process.env.DB_TOKEN as string;
-
-declare global {
-  //where string == guildID
-  var leaderBoards: Map<string, LeaderBoards>
-}
 
 console.log("----------------------");
 console.log("-- Torstai Starting --");
