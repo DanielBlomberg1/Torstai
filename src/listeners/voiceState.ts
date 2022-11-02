@@ -1,9 +1,9 @@
+import { fetchAutoJoin } from './../Database/Mongoose';
 import { Client, InternalDiscordGatewayAdapterCreator } from "discord.js";
 import { getVoiceConnection, joinVoiceChannel, VoiceConnection } from "@discordjs/voice";
 import { Print } from "../utils/Print";
 import fs from "fs";
 import { PlayerStopPlaying } from "../audio/SoundEffectPlayer";
-import { getConfigByGuildId } from "../schemas/serverconfig";
 
 const tempFile3AM = "./public/output.mp3";
 
@@ -26,11 +26,10 @@ const selfDestruct = (c : VoiceConnection) =>{
 
 
 export default (client: Client): void => {
-  client.on("voiceStateUpdate", (oldState, newState) => {
+  client.on("voiceStateUpdate", async (oldState, newState) => {
     const botId = client.user?.id as string;
     let c = getVoiceConnection(newState.guild.id);
-    const boolean = getConfigByGuildId(newState.guild.id)?.autoJoin || true;
-
+    let boolean = await fetchAutoJoin(newState.guild.id);
     // if bot not in voice and somebody joins voice
     if (!c && boolean) {
       let size = 0;

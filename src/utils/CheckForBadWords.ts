@@ -15,7 +15,7 @@ export default async(msg: string, author: User, offenceType: OffenceType) => {
     if(offenceCommited){
         const commitedAt = new Date();
 
-        Print("Detected blacklisted word in a message of type: " + offenceType.toString() + " By user " + author.username + " the message content was :" + msg);
+        Print("Detected blacklisted word in a message of type: " + offenceType.toString() + " By user " + author.username + " the message content was: " + msg);
     }
 }
 

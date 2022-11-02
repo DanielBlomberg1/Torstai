@@ -8,7 +8,7 @@ import {
 } from "discord.js";
 import { Print } from "../utils/Print";
 import { Command } from "../interfaces/Command";
-import serverconfig from "../schemas/serverconfig";
+import serverconfig from "../Database/schemas/serverconfig";
 
 export const Configure: Command = {
   name: "configure",
