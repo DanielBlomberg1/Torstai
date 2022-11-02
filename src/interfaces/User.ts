@@ -2,18 +2,17 @@ export interface User{
     guildId:String,
     userId:String,
     Karma: Number,
-    Offences: Offences[]
+    Offences: OffenceType[]
 }
 
-export interface Offences{
-    offenceType: OffenceType,
+export interface OffenceType{
+    offenceType: OffenceEnum,
     offenceDescription?: string,
     commitedOn: Date,
-    oldKarma: Number,
-    newKarma: Number,
+    karmaChange: Number
 }
 
-export enum OffenceType{
+export enum OffenceEnum{
     oral,
     written,
     other

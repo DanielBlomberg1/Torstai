@@ -10,7 +10,7 @@ import { PlaySoundEffect } from "../audio/SoundEffectPlayer";
 import { Print } from "../utils/Print";
 import { audioclips, susaudioclips } from "../utils/audioclips";
 import CheckForBadWords from "../utils/CheckForBadWords";
-import { OffenceType } from "../interfaces/User";
+import { OffenceEnum } from "../interfaces/User";
 
 const execFile2 = promisify(execFile);
 const outputPath = "./public/output.mp3";
@@ -92,7 +92,7 @@ export default (client: Client): void => {
     const message = msg.content[0].toUpperCase() + msg.content.substring(1);
     const author = msg.author;
 
-    CheckForBadWords(msg.content.toLowerCase(), msg.author, OffenceType.oral);
+    CheckForBadWords(msg.content.toLowerCase(), msg.author, msg.guild, OffenceEnum.oral);
 
     // do some loop here idk its been too long
     runCommand(client, "Soita", "play", message, guild, author);

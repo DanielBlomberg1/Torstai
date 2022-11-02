@@ -8,7 +8,7 @@ import {
 } from "discord.js";
 import { Print } from "../utils/Print";
 import { Command } from "../interfaces/Command";
-import serverconfig from "../Database/schemas/serverconfig";
+import { putConfiguration } from "../Database/Mongoose";
 
 export const Configure: Command = {
   name: "configure",
@@ -44,19 +44,7 @@ export const Configure: Command = {
 
     // save into mongo
     if (guildId && channelId) {
-      let update = {
-        guildId: interaction.guildId,
-        outputChannelId: channelId,
-        commandPrefix: commandPrefix?.value,
-        autoJoin: boolean,
-      };
-      let options = { upsert: true, new: true, setDefaultsOnInsert: true };
-      let model = await serverconfig.findOneAndUpdate(
-        { guildId: interaction.guildId },
-        update,
-        options
-      );
-      model?.save();
+      await putConfiguration(guildId, channelId, commandPrefix?.value as string, boolean as boolean)
     }
     const content =
       "Added textchannel " +

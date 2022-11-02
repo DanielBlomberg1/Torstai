@@ -5,13 +5,14 @@ const users = new Schema({
     guildId:String,
     userId:String,
     karma:Number,
-    Offences: {
-        offenceType: Number,
-        offenceDescription: String,
-        commitedOn: Date,
-        oldKarma: Number,
-        newKarma: Number,
-    }
+    Offences: [
+        {
+            offenceType: Number,
+            offenceDescription: String,
+            commitedOn: Date,
+            karmaChange: Number
+        }
+    ]
 })
 
 const usersmodel = model("User", users, "users");
