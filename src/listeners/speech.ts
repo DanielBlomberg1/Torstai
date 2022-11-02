@@ -10,13 +10,14 @@ import { Print } from "../utils/Print";
 import { audioclips, susaudioclips } from "../utils/audioclips";
 import CheckForBadWords from "../utils/CheckForBadWords";
 import { OffenceType } from "../interfaces/LeaderBoard";
+import { getConfigByGuildId } from "../schemas/serverconfig";
 
 const execFile2 = promisify(execFile);
 const outputPath = "./public/output.mp3";
 let isDownloading = false;
 
 export const getPrefix = (g: Guild) => {
-  return (global.serverConfig.get(g.id)?.commandPrefix as string) || ":D";
+  return (getConfigByGuildId(g.id)?.commandPrefix as string) || ":D";
 };
 
 const tryToSend = (channel: TextChannel, msg: string, author: User) => {
@@ -48,7 +49,7 @@ const runCommand = (
 ) => {
   if (msg.toLowerCase().startsWith(word.toLowerCase())) {
     let whatWrite = msg?.replace(word, getPrefix(guild) + " " + getsReplacedBy);
-    const chatChannel = global.serverConfig.get(guild.id)
+    const chatChannel = getConfigByGuildId(guild.id)
       ?.outputChannelId as string;
 
     if (chatChannel) {
@@ -68,7 +69,7 @@ const runCommandSimple = (
   if (msg.toLowerCase().startsWith(word.toLowerCase())) {
     let whatWrite = getPrefix(guild) + " " + printsCommand;
 
-    const chatChannel = global.serverConfig.get(guild.id)
+    const chatChannel = getConfigByGuildId(guild.id)
       ?.outputChannelId as string;
 
     if (chatChannel) {

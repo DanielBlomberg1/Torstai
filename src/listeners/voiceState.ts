@@ -3,6 +3,7 @@ import { getVoiceConnection, joinVoiceChannel, VoiceConnection } from "@discordj
 import { Print } from "../utils/Print";
 import fs from "fs";
 import { PlayerStopPlaying } from "../audio/SoundEffectPlayer";
+import { getConfigByGuildId } from "../schemas/serverconfig";
 
 const tempFile3AM = "./public/output.mp3";
 
@@ -28,7 +29,7 @@ export default (client: Client): void => {
   client.on("voiceStateUpdate", (oldState, newState) => {
     const botId = client.user?.id as string;
     let c = getVoiceConnection(newState.guild.id);
-    const boolean = globalThis.serverConfig.get(newState.guild.id)?.autoJoin || true;
+    const boolean = getConfigByGuildId(newState.guild.id)?.autoJoin || true;
 
     // if bot not in voice and somebody joins voice
     if (!c && boolean) {

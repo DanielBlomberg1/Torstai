@@ -8,8 +8,7 @@ import {
 } from "discord.js";
 import { Print } from "../utils/Print";
 import { Command } from "../interfaces/Command";
-import { ServerConfig } from "../interfaces/ServerConfig";
-import { writeToFile } from "../utils/WriteData";
+import serverconfig from "../schemas/serverconfig";
 
 export const Configure: Command = {
   name: "configure",
@@ -43,16 +42,22 @@ export const Configure: Command = {
     const commandPrefix = interaction.options.get("commandprefix");
     const boolean = interaction.options.get("autojoin")?.value;
 
+    // save into mongo
     if (guildId && channelId) {
-      global.serverConfig.set(guildId, {
+      let update = {
+        guildId: interaction.guildId,
         outputChannelId: channelId,
-        commandPrefix: commandPrefix?.value, 
+        commandPrefix: commandPrefix?.value,
         autoJoin: boolean,
-      } as ServerConfig);
+      };
+      let options = { upsert: true, new: true, setDefaultsOnInsert: true };
+      let model = await serverconfig.findOneAndUpdate(
+        { guildId: interaction.guildId },
+        update,
+        options
+      );
+      model?.save();
     }
-
-    writeToFile();
-
     const content =
       "Added textchannel " +
       interaction?.options?.data[0]?.channel?.name +

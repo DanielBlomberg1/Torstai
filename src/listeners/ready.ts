@@ -6,6 +6,7 @@ import {
 } from "discord.js";
 import { Print } from "../utils/Print";
 import { Commands } from "../Commands";
+import { getConfigByGuildId } from "../schemas/serverconfig";
 
 export default (client: Client): void => {
   client.on("ready", async () => {
@@ -18,7 +19,7 @@ export default (client: Client): void => {
     await client.application.commands.set(Commands);
 
     client.guilds.cache.forEach((g: Guild) => {
-      const boolean = globalThis.serverConfig.get(g.id)?.autoJoin || true;
+      const boolean = getConfigByGuildId(g.id)?.autoJoin || true;
       if (boolean) {
         // temp vars
         let size = 0;

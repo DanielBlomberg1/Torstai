@@ -10,22 +10,20 @@ import speech from "./listeners/speech";
 import onMessage from "./listeners/onMessage";
 
 // other stuff
-import { LoadData } from "./utils/LoadData";
-import { ServerConfig } from "./interfaces/ServerConfig";
 import { LeaderBoards } from "./interfaces/LeaderBoard";
 
+// db
+import { connect } from "mongoose"
 
 dotenv.config();
 
 const token = process.env.BOT_TOKEN;
+const dbToken = process.env.DB_TOKEN as string;
 
 declare global {
   //where string == guildID
-  var serverConfig: Map<string, ServerConfig>;
   var leaderBoards: Map<string, LeaderBoards>
 }
-
-globalThis.serverConfig = LoadData();
 
 console.log("----------------------");
 console.log("-- Torstai Starting --");
@@ -48,3 +46,8 @@ speech(client);
 onMessage(client);
 
 client.login(token);
+// connect to database
+(async ()=>{
+  await connect(dbToken).catch(console.error);
+})();
+
