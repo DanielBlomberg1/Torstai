@@ -109,11 +109,16 @@ export const fetchStandings = async function (guild: Guild) {
   const allUsers = await usersmodel.find({ guildId: guild.id });
   const userlist: { userId: string; karma: number }[] = [];
 
-  allUsers.forEach((u: { userId: string; karma: number; }) => {
+  allUsers.forEach((u: { userId: string; karma: number }) => {
     if (u.userId && u.karma) {
       userlist.push({ userId: u.userId, karma: u.karma });
     }
   });
+
+  if (userlist) {
+    userlist.sort((a, b) => a.karma - b.karma);
+  }
+
   return userlist;
 };
 
@@ -123,7 +128,15 @@ export const fetchOffencesForUser = async function (guild: Guild, user: User) {
     userId: user.id,
   });
 
-  const offs: OffenceType[] | undefined = theUser?.Offences.filter((offence: OffenceType) => offence.offenceType != 2);
+  const offs: OffenceType[] | undefined = theUser?.Offences.filter(
+    (offence: OffenceType) => offence.offenceType != 2
+  );
+
+  if (offs) {
+    offs.sort((a: OffenceType, b: OffenceType) => {
+      return a.commitedOn.getTime() - b.commitedOn.getTime();
+    });
+  }
 
   return offs;
 };
