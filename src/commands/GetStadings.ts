@@ -1,6 +1,6 @@
 import { CommandInteraction, Client, ApplicationCommandType } from "discord.js";
 import { Command } from "../interfaces/Command";
-import { fetchStadings } from "../Database/Mongoose";
+import { fetchStandings } from "../Database/Mongoose";
 
 export const GetStandings: Command = {
   name: "getstandings",
@@ -10,7 +10,7 @@ export const GetStandings: Command = {
     let content = "success";
 
     if (interaction.guild) {
-      const userlist = await fetchStadings(interaction.guild);
+      const userlist = await fetchStandings(interaction.guild);
       content = interaction.guild.name + " : Karma Leaderboard \n```";
 
       userlist.forEach((u) => {

@@ -105,11 +105,11 @@ export const putOffence = async function (
   }
 };
 
-export const fetchStadings = async function (guild: Guild) {
+export const fetchStandings = async function (guild: Guild) {
   const allUsers = await usersmodel.find({ guildId: guild.id });
   let userlist: { userId: string; karma: number }[] = [];
 
-  allUsers.forEach((u) => {
+  allUsers.forEach((u: { userId: string; karma: number; }) => {
     if (u.userId && u.karma) {
       userlist.push({ userId: u.userId, karma: u.karma });
     }
@@ -123,7 +123,7 @@ export const fetchOffencesForUser = async function (guild: Guild, user: User) {
     userId: user.id,
   });
 
-  const offs = theUser?.Offences.filter((offence) => offence.offenceType != 2);
+  const offs: OffenceType[] = theUser?.Offences.filter((offence: OffenceType) => offence.offenceType != 2);
 
   return offs;
 };
