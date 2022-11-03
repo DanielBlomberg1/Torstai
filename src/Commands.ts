@@ -1,3 +1,4 @@
+import { CriminalRecord } from './commands/CriminalRecord';
 import { Configure } from "./commands/ConfigureServer";
 import { JoinVC } from "./commands/JoinVoice";
 import { Disconnect } from "./commands/Disconnect";
@@ -12,4 +13,5 @@ export const Commands: Command[] = [
   Disconnect,
   Configure,
   GetStandings,
+  CriminalRecord
 ];
