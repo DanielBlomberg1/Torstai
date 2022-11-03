@@ -17,7 +17,7 @@ const outputPath = "./public/output.mp3";
 let isDownloading = false;
 
 const tryToSend = (channel: TextChannel, msg: string, author: User) => {
-  let name = channel.guild.name;
+  const name = channel.guild.name;
 
   if (typeof channel !== "undefined") {
     channel.send(msg);
@@ -44,15 +44,15 @@ const runCommand = async (
   author: User
 ) => {
   if (msg.toLowerCase().startsWith(word.toLowerCase())) {
-    let whatWrite = msg?.replace(
+    const whatWrite = msg?.replace(
       word,
       (await fetchPrefix(guild.id)) + " " + getsReplacedBy
     );
-    let chatChannel = await fetchTextChannel(guild.id);
+    const chatChannel = await fetchTextChannel(guild.id);
     console.log("try to play", msg, word, whatWrite);
 
     if (chatChannel) {
-      let channel = client.channels.cache.get(chatChannel) as TextChannel;
+      const channel = client.channels.cache.get(chatChannel) as TextChannel;
       console.log(channel.name);
       tryToSend(channel, whatWrite, author);
     }
@@ -67,11 +67,11 @@ const runCommandSimple = async (
   author: User
 ) => {
   if (msg.toLowerCase().startsWith(word.toLowerCase())) {
-    let whatWrite = (await fetchPrefix(guild.id)) + " " + printsCommand;
-    let chatChannel = await fetchTextChannel(guild.id);
+    const whatWrite = (await fetchPrefix(guild.id)) + " " + printsCommand;
+    const chatChannel = await fetchTextChannel(guild.id);
 
     if (chatChannel) {
-      let channel = client.channels.cache.get(chatChannel) as TextChannel;
+      const channel = client.channels.cache.get(chatChannel) as TextChannel;
       tryToSend(channel, whatWrite, author);
     }
   }

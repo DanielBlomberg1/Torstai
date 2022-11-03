@@ -16,7 +16,7 @@ export const PlaySoundEffect = (guild: Guild, pathToClip: string) => {
 };
 
 export const PlayResource = (guild: Guild, resource: AudioResource) => {
-  let c = getVoiceConnection(guild.id);
+  const c = getVoiceConnection(guild.id);
 
   if (player.state.status != AudioPlayerStatus.Playing) {
     player.play(resource);

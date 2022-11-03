@@ -6,7 +6,7 @@ import { OffenceType } from "./schemas/usersmodel.types";
 const putOptions = { upsert: true, new: true, setDefaultsOnInsert: true };
 
 export const fetchPrefix = async function (id: string) {
-  let config = await configmodel.findOne({ guildId: id });
+  const config = await configmodel.findOne({ guildId: id });
   if (config) {
     return config.commandPrefix;
   }
@@ -14,7 +14,7 @@ export const fetchPrefix = async function (id: string) {
 };
 
 export const fetchAutoJoin = async function (id: string) {
-  let config = await configmodel.findOne({ guildId: id });
+  const config = await configmodel.findOne({ guildId: id });
   if (config) {
     return config.autoJoin;
   }
@@ -23,7 +23,7 @@ export const fetchAutoJoin = async function (id: string) {
 };
 
 export const fetchTextChannel = async function (id: string) {
-  let config = await configmodel.findOne({ guildId: id });
+  const config = await configmodel.findOne({ guildId: id });
   if (config) {
     return config.outputChannelId;
   }
@@ -37,13 +37,13 @@ export const putConfiguration = async function (
   prefix: string,
   join: boolean
 ) {
-  let update = {
+  const update = {
     guildId: gId,
     outputChannelId: channelId,
     commandPrefix: prefix,
     autoJoin: join,
   };
-  let model = await configmodel.findOneAndUpdate(
+  const model = await configmodel.findOneAndUpdate(
     { guildId: gId },
     update,
     putOptions
@@ -57,13 +57,13 @@ export const putOffence = async function (
   off: OffenceType,
   karmagained: number
 ) {
-  let oneUser = await usersmodel.findOne({
+  const oneUser = await usersmodel.findOne({
     guildId: guild.id,
     userId: user.id,
   });
   if (oneUser && oneUser.karma) {
     // ignore for now
-    let newOffences = [...oneUser.Offences];
+    const newOffences = [...oneUser.Offences];
 
     newOffences.push({
       offenceType: off.offenceType,
@@ -72,18 +72,18 @@ export const putOffence = async function (
       karmaChange: karmagained,
     });
 
-    let update = {
+    const update = {
       karma: oneUser.karma + karmagained,
       Offences: [...newOffences],
     };
-    let model = await usersmodel.findOneAndUpdate(
+    const model = await usersmodel.findOneAndUpdate(
       { guildId: guild.id, userId: user.id },
       update,
       putOptions
     );
     model?.save();
   } else {
-    let update = {
+    const update = {
       guildId: guild.id,
       userId: user.id,
       karma: 1500 + karmagained,
@@ -96,7 +96,7 @@ export const putOffence = async function (
         },
       ],
     };
-    let model = await usersmodel.findOneAndUpdate(
+    const model = await usersmodel.findOneAndUpdate(
       { guildId: guild.id, userId: user.id },
       update,
       putOptions
@@ -107,7 +107,7 @@ export const putOffence = async function (
 
 export const fetchStandings = async function (guild: Guild) {
   const allUsers = await usersmodel.find({ guildId: guild.id });
-  let userlist: { userId: string; karma: number }[] = [];
+  const userlist: { userId: string; karma: number }[] = [];
 
   allUsers.forEach((u: { userId: string; karma: number; }) => {
     if (u.userId && u.karma) {

@@ -11,7 +11,7 @@ export interface OffenceType {
   offenceType: OffenceEnum;
   offenceDescription?: string;
   commitedOn: Date;
-  karmaChange: Number;
+  karmaChange: number;
 }
 
 export enum OffenceEnum {
@@ -21,4 +21,4 @@ export enum OffenceEnum {
 }
 
 export interface IUserDocument extends IUser, Document {}
-export interface IUserModel extends Model<IUserDocument> {}
+export type IUserModel = Model<IUserDocument>

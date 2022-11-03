@@ -14,7 +14,7 @@ export const GetStandings: Command = {
       content = interaction.guild.name + " : Karma Leaderboard \n```";
 
       userlist.forEach((u) => {
-        let nick = interaction.guild?.members.cache.get(u.userId)?.displayName;
+        const nick = interaction.guild?.members.cache.get(u.userId)?.displayName;
         content += nick + " | " + u.karma + "\n";
       });
       content += "```";

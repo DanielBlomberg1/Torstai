@@ -30,7 +30,7 @@ export default (client: Client): void => {
   client.on("voiceStateUpdate", async (oldState, newState) => {
     const botId = client.user?.id as string;
     let c = getVoiceConnection(newState.guild.id);
-    let boolean = await fetchAutoJoin(newState.guild.id);
+    const boolean = await fetchAutoJoin(newState.guild.id);
     // if bot not in voice and somebody joins voice
     if (!c && boolean) {
       let size = 0;
@@ -70,8 +70,8 @@ export default (client: Client): void => {
 
     const oldSz: number = oldState.channel?.members.size as number;
     const newSz: number = newState.channel?.members.size as number;
-    let oldBots: number = 0;
-    let newBotz: number = 0;
+    let oldBots = 0;
+    let newBotz = 0;
 
     let isBotOnOldChannel = false;
 

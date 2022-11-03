@@ -1,7 +1,9 @@
 {
   "scripts": {
     "start": "ts-node src/Bot.ts",
-    "prettier": "prettier --write \"**/*.{ts,js}\""
+    "prettier": "prettier --write \"**/*.{ts,js}\"",
+    "lint": "eslint . ",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "@discordjs/opus": "^0.8.0",
@@ -17,6 +19,9 @@
   },
   "devDependencies": {
     "@types/node": "^18.7.18",
+    "@typescript-eslint/eslint-plugin": "^5.42.0",
+    "@typescript-eslint/parser": "^5.42.0",
+    "eslint": "^8.26.0",
     "prettier": "2.7.1",
     "ts-node": "^10.9.1",
     "typescript": "^4.8.3"
