@@ -123,7 +123,7 @@ export const fetchOffencesForUser = async function (guild: Guild, user: User) {
     userId: user.id,
   });
 
-  const offs: OffenceType[] = theUser?.Offences.filter((offence: OffenceType) => offence.offenceType != 2);
+  const offs: OffenceType[] | undefined = theUser?.Offences.filter((offence: OffenceType) => offence.offenceType != 2);
 
   return offs;
 };
