@@ -22,9 +22,7 @@ export default async (
     const commitedAt = new Date();
     let karmaPenalty = 0;
     const offenceString =
-      "Detected blacklisted word in a message of type: " +
-      offenceType.toString() +
-      " By user " +
+      "Detected blacklisted word in by the user " +
       author.username +
       " the message content was: " +
       msg;
@@ -40,7 +38,7 @@ export default async (
       commitedOn: commitedAt,
       karmaChange: karmaPenalty,
       offenceType: offenceType,
-      offenceDescription: commitedAt.toUTCString() + " " + offenceString,
+      offenceDescription: offenceString,
     };
 
     await putOffence(guild, author, offence, karmaPenalty);

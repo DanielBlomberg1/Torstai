@@ -21,27 +21,35 @@ export const CriminalRecord: Command = {
       description: "The user whose criminal record to investigate",
       required: true,
     },
+    {
+      name: "amount",
+      type: ApplicationCommandOptionType.Number,
+      description: "amount of offences to get",
+      required: false,
+    },
   ],
+
   run: async (client: Client, interaction: CommandInteraction) => {
     let content = "failed";
     const user = interaction.options.get("user")?.user as User;
+    const amount = (interaction.options.get("amount")?.value as number) || 5;
 
     if (interaction.guild) {
       const offenceList = await fetchOffencesForUser(interaction.guild, user);
-      content = user.username + " : Criminal Record 👮\n";
-      const latestfive = offenceList?.slice(0,5);
+      content = user.username + " : Criminal Record 👮\n```";
+      const latestfive = offenceList?.slice(
+        0,
+        amount <= offenceList.length ? amount : offenceList.length
+      );
 
       if (latestfive) {
         latestfive.forEach((u) => {
-          content += (u.offenceType == 0 ? "oral: " : "written: ") + "```" +
-            u.offenceDescription +
-            " | " +
-            u.karmaChange +
-            "```\n";
+          if (content.length < 1500) {
+            content += u.offenceDescription + " | " + u.karmaChange + "\n";
+          }
         });
-        content += "Showing latest 5 cases";
-        
-      }else{
+        content += "```Showing latest " + amount + " cases";
+      } else {
         content += "Squaaky clean 😎";
       }
     }

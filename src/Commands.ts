@@ -1,3 +1,4 @@
+import { CrimesBefore } from './commands/CrimesBefore';
 import { CriminalRecord } from './commands/CriminalRecord';
 import { Configure } from "./commands/ConfigureServer";
 import { JoinVC } from "./commands/JoinVoice";
@@ -13,5 +14,6 @@ export const Commands: Command[] = [
   Disconnect,
   Configure,
   GetStandings,
-  CriminalRecord
+  CriminalRecord,
+  CrimesBefore
 ];

@@ -134,8 +134,19 @@ export const fetchOffencesForUser = async function (guild: Guild, user: User) {
 
   if (offs) {
     offs.sort((a: OffenceType, b: OffenceType) => {
-      return a.commitedOn.getTime() - b.commitedOn.getTime();
+      return b.commitedOn.getTime() - a.commitedOn.getTime();
     });
+  }
+
+  return offs;
+};
+
+export const fetchOffencesForUserBeforeDate = async function (guild: Guild, user: User, date: Date) {
+  let offs = await fetchOffencesForUser(guild, user);
+  if(offs){
+    offs.filter((o:OffenceType)=>{
+      o.commitedOn.getTime() < date.getTime()
+    })
   }
 
   return offs;
