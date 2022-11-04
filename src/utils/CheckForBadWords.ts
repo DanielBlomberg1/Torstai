@@ -13,7 +13,7 @@ export default async (
 ) => {
   const total = checkWords(msg);
 
-  if (total > 0) {
+  if (total < 0) {
     const commitedAt = new Date();
     let karmaPenalty = 0;
     const offenceString =
@@ -22,7 +22,7 @@ export default async (
       " the message content was: " +
       msg;
 
-    if (offenceType == 0) {
+    if (offenceType === 0) {
       karmaPenalty = total;
     } else {
       karmaPenalty = total / 2;
@@ -71,6 +71,6 @@ function checkWords(word: string): number {
       total += severity(value);
     }
   }
-
+  
   return total;
 }
