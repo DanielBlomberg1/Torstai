@@ -31,7 +31,7 @@ jobs:
       runs-on: ubuntu-latest
       if: github.ref == 'refs/heads/master' # we tell Github to only execute this step if we're on our master branch (so we don't put unfinished branches in production)
       steps:
-        - name: Deploying to tailow server
+        - name: Deploying to server
           uses: appleboy/ssh-action@master # An action made to control Linux servers
           with: # We set all our secrets here for the action, these won't be shown in the action logs
             host: ${{ secrets.HOST }}
@@ -43,4 +43,6 @@ jobs:
               git pull # we pull any changes from git
               npm prune # we remove any unused dependencies
               npm install # we install any missing dependencies
-              pm2 reload all # we reload the app via PM2
+              cd /
+              cd lib/systemd/system/
+              sudo systemctl daemon-reload
