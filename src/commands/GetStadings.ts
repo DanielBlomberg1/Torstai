@@ -16,7 +16,7 @@ export const GetStandings: Command = {
         userlist.forEach((u) => {
           const nick = interaction.guild?.members.cache.get(
             u.userId
-          )?.displayName;
+          )?.user.username;
           content += nick + " | " + u.karma + "\n";
         });
       } else {
