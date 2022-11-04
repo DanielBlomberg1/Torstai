@@ -11,26 +11,21 @@ export default async (
   guild: Guild,
   offenceType: OffenceEnum
 ) => {
-  let offenceCommited = false;
-  msg.split(/\s+/).forEach((word: string) => {
-    if (checkWords(word)) {
-      offenceCommited = true;
-    }
-  });
+  const total = checkWords(msg);
 
-  if (offenceCommited) {
+  if (total > 0) {
     const commitedAt = new Date();
     let karmaPenalty = 0;
     const offenceString =
-      "Detected blacklisted word in by the user " +
+      "Detected blacklisted word(s) in by the user " +
       author.username +
       " the message content was: " +
       msg;
 
     if (offenceType == 0) {
-      karmaPenalty = -Math.floor(Math.random() * (100 - 75 + 1) + 75);
+      karmaPenalty = total;
     } else {
-      karmaPenalty = -Math.floor(Math.random() * (50 - 25 + 1) + 25);
+      karmaPenalty = total / 2;
     }
 
     Print(offenceString);
@@ -45,9 +40,37 @@ export default async (
   }
 };
 
-function checkWords(word: string): boolean {
-  if (en.includes(word) || fi.includes(word)) {
-    return true;
+const severity = (n: number) => {
+  switch (n) {
+    case 1:
+      return -20;
+    case 2:
+      return -40;
+    case 3:
+      return -70;
+    case 4:
+      return -120;
+    case 5:
+      return -600;
+    default:
+      return -50;
   }
-  return false;
+};
+
+function checkWords(word: string): number {
+  let total = 0;
+  const lowercase = word.toLowerCase();
+
+  for (const [key, value] of Object.entries(en)) {
+    if (lowercase.includes(key)) {
+      total += severity(value);
+    }
+  }
+  for (const [key, value] of Object.entries(fi)) {
+    if (lowercase.includes(key)) {
+      total += severity(value);
+    }
+  }
+
+  return total;
 }

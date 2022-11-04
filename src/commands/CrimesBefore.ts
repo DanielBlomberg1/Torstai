@@ -5,6 +5,7 @@ import {
   ApplicationCommandType,
   ApplicationCommandOptionType,
   User,
+  PermissionFlagsBits,
 } from "discord.js";
 import { Command } from "../interfaces/Command";
 
@@ -12,6 +13,7 @@ export const CrimesBefore: Command = {
   name: "crimesbefore",
   description: "fetch number of crimes user has commited since certain date",
   type: ApplicationCommandType.ChatInput,
+  defaultMemberPermissions: PermissionFlagsBits.AddReactions,
   options: [
     {
       name: "user",

@@ -116,7 +116,7 @@ export const fetchStandings = async function (guild: Guild) {
   });
 
   if (userlist) {
-    userlist.sort((a, b) => a.karma - b.karma);
+    userlist.sort((a, b) => b.karma - a.karma);
   }
 
   return userlist;

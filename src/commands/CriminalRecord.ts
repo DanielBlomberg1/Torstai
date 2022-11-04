@@ -45,7 +45,13 @@ export const CriminalRecord: Command = {
       if (latestfive) {
         latestfive.forEach((u) => {
           if (content.length < 1500) {
-            content += u.offenceDescription + " | " + u.karmaChange + "\n";
+            content +=
+              u.offenceDescription +
+              " | " +
+              u.karmaChange +
+              " | " +
+              (u.offenceType === 0 ? "oral" : "written") +
+              "\n";
           }
         });
         content += "```Showing latest " + amount + " cases";

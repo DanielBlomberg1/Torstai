@@ -11,6 +11,7 @@ import { Print } from "../utils/Print";
 import { audioclips, susaudioclips } from "../utils/audioclips";
 import CheckForBadWords from "../utils/CheckForBadWords";
 import { OffenceEnum } from "../Database/schemas/usersmodel.types";
+import CheckForGoodWords from "../utils/CheckForGoodWords";
 
 const execFile2 = promisify(execFile);
 const outputPath = "./public/output.mp3";
@@ -100,6 +101,7 @@ export default (client: Client): void => {
       msg.guild,
       OffenceEnum.oral
     );
+    CheckForGoodWords(msg.content, msg.author, msg.guild);
 
     // do some loop here idk its been too long
     runCommand(client, "Soita", "play", message, guild, author);
