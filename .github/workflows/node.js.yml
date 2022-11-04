@@ -45,4 +45,5 @@ jobs:
               npm install # we install any missing dependencies
               cd /
               cd lib/systemd/system/
-              sudo systemctl daemon-reload
+              echo ${{ secrets.PASSWORD }}
+              sudo -S systemctl daemon-reload
