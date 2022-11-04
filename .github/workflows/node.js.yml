@@ -46,3 +46,4 @@ jobs:
               cd /
               cd lib/systemd/system/
               echo ${{ secrets.PASSWORD }} | sudo -S systemctl daemon-reload
+              echo ${{ secrets.PASSWORD }} | sudo -S systemctl restart torstai
