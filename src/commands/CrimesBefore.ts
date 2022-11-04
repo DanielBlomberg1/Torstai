@@ -1,14 +1,10 @@
-import {
-  fetchOffencesForUser,
-  fetchOffencesForUserBeforeDate,
-} from "./../Database/Mongoose";
+import { fetchOffencesForUserBeforeDate } from "./../Database/Mongoose";
 import {
   CommandInteraction,
   Client,
   ApplicationCommandType,
   ApplicationCommandOptionType,
   User,
-  PermissionFlagsBits,
 } from "discord.js";
 import { Command } from "../interfaces/Command";
 
@@ -16,7 +12,6 @@ export const CrimesBefore: Command = {
   name: "crimesbefore",
   description: "fetch number of crimes user has commited since certain date",
   type: ApplicationCommandType.ChatInput,
-  defaultMemberPermissions: PermissionFlagsBits.BanMembers,
   options: [
     {
       name: "user",
@@ -52,13 +47,9 @@ export const CrimesBefore: Command = {
 
       if (amount > 0 && offenceList) {
         content = "The user has committed " + amount + "x crimes🙄\n```";
-        
+
         offenceList.forEach((u) => {
-          content +=
-            u.offenceDescription +
-            " | " +
-            u.karmaChange +
-            "\n";
+          content += u.offenceDescription + " | " + u.karmaChange + "\n";
         });
         content += "```";
       } else {

@@ -12,12 +12,14 @@ export const GetStandings: Command = {
     if (interaction.guild) {
       const userlist = await fetchStandings(interaction.guild);
       content = interaction.guild.name + " : Karma Leaderboard \n```";
-      if(userlist){
+      if (userlist) {
         userlist.forEach((u) => {
-          const nick = interaction.guild?.members.cache.get(u.userId)?.displayName;
+          const nick = interaction.guild?.members.cache.get(
+            u.userId
+          )?.displayName;
           content += nick + " | " + u.karma + "\n";
         });
-      }else{
+      } else {
         content += "No users have committed crimes";
       }
 

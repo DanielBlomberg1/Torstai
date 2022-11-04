@@ -21,4 +21,4 @@ export enum OffenceEnum {
 }
 
 export interface IUserDocument extends IUser, Document {}
-export type IUserModel = Model<IUserDocument>
+export type IUserModel = Model<IUserDocument>;

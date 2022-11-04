@@ -141,12 +141,16 @@ export const fetchOffencesForUser = async function (guild: Guild, user: User) {
   return offs;
 };
 
-export const fetchOffencesForUserBeforeDate = async function (guild: Guild, user: User, date: Date) {
+export const fetchOffencesForUserBeforeDate = async function (
+  guild: Guild,
+  user: User,
+  date: Date
+) {
   let offs = await fetchOffencesForUser(guild, user);
-  if(offs){
-    offs.filter((o:OffenceType)=>{
-      o.commitedOn.getTime() < date.getTime()
-    })
+  if (offs) {
+    offs.filter((o: OffenceType) => {
+      o.commitedOn.getTime() < date.getTime();
+    });
   }
 
   return offs;
