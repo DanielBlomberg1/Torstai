@@ -51,9 +51,14 @@ export const CrimesBefore: Command = {
         content = "The user has committed " + amount + "x crimes🙄\n```";
 
         offenceList.forEach((u) => {
-          content += u.offenceDescription + " | " + u.karmaChange + "\n";
+          if(content.length < 1500){
+            content += u.offenceDescription + " | " + u.karmaChange + "\n";
+          }
         });
         content += "```";
+        if(content.length > 1500){
+          content += "and more...";
+        }
       } else {
         content = "No Crimes😍";
       }
