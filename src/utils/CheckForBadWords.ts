@@ -11,7 +11,11 @@ export default async (
   guild: Guild,
   offenceType: OffenceEnum
 ) => {
-  const total = checkWords(msg);
+  let total = 0;
+
+  msg.split(/\s+/).forEach((word: string) => {
+    total += checkWords(word)
+  }); 
 
   if (total < 0) {
     const commitedAt = new Date();
@@ -62,12 +66,12 @@ function checkWords(word: string): number {
   const lowercase = word.toLowerCase();
 
   for (const [key, value] of Object.entries(en)) {
-    if (lowercase.includes(key)) {
+    if (lowercase === key) {
       total += severity(value);
     }
   }
   for (const [key, value] of Object.entries(fi)) {
-    if (lowercase.includes(key)) {
+    if (lowercase === key) {
       total += severity(value);
     }
   }
