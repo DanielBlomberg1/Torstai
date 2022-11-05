@@ -11,19 +11,18 @@ export const GetStandings: Command = {
 
     if (interaction.guild) {
       const userlist = await fetchStandings(interaction.guild);
-      content = interaction.guild.name + " : Karma Leaderboard \n```";
-      if (userlist) {
+      content = interaction.guild.name + " : Karma Leaderboard \n";
+      if (userlist.length > 0) {
+        content += "```";
         userlist.forEach((u) => {
-          const nick = interaction.guild?.members.cache.get(
-            u.userId
-          )?.user.username;
+          const nick = interaction.guild?.members.cache.get(u.userId)?.user
+            .username;
           content += nick + " | " + u.karma + "\n";
         });
+        content += "```";
       } else {
         content += "No users have committed crimes";
       }
-
-      content += "```";
     }
 
     await interaction.followUp({
