@@ -8,7 +8,7 @@ export const audioclips = [
   "skype",
   "windows",
   "hyvä fiilis",
-  "Mäkkäri",
+  "mäkkäri",
   "glizzy",
 ] as const;
 export const susaudioclips = [
