@@ -50,11 +50,9 @@ const runCommand = async (
       (await fetchPrefix(guild.id)) + " " + getsReplacedBy
     );
     const chatChannel = await fetchTextChannel(guild.id);
-    console.log("try to play", msg, word, whatWrite);
 
     if (chatChannel) {
       const channel = client.channels.cache.get(chatChannel) as TextChannel;
-      console.log(channel.name);
       tryToSend(channel, whatWrite, author);
     }
   }
