@@ -11,6 +11,7 @@ import onMessage from "./listeners/onMessage";
 
 // db
 import { connect } from "mongoose";
+import { installIfNotInstalled } from "./utils/ytdlp";
 
 dotenv.config();
 
@@ -28,7 +29,7 @@ const client = new Client({
     GatewayIntentBits.Guilds,
     GatewayIntentBits.MessageContent,
     GatewayIntentBits.GuildMembers,
-    GatewayIntentBits.GuildPresences
+    GatewayIntentBits.GuildPresences,
   ],
 });
 
@@ -43,4 +44,5 @@ client.login(token);
 // connect to database
 (async () => {
   await connect(dbToken).catch(console.error);
+  installIfNotInstalled();
 })();

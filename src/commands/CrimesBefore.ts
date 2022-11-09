@@ -34,7 +34,7 @@ export const CrimesBefore: Command = {
     const hours = interaction.options.get("hours")?.value as number;
 
     if (interaction.guild) {
-      let date = new Date();
+      const date = new Date();
 
       date.setHours(date.getHours() - (hours < 10 ? hours : 10));
 

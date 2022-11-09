@@ -1,9 +1,8 @@
 import { fetchPrefix, fetchTextChannel } from "./../Database/Mongoose";
 import { VoiceMessage } from "discord-speech-recognition";
 import { Client, Guild, TextChannel, User } from "discord.js";
-import { promisify } from "util";
-import { execFile } from "child_process";
 import fs from "fs";
+import YTDlpWrap from 'yt-dlp-wrap';
 
 import { PlaySoundEffect } from "../audio/SoundEffectPlayer";
 
@@ -13,9 +12,10 @@ import CheckForBadWords from "../utils/CheckForBadWords";
 import { OffenceEnum } from "../Database/schemas/usersmodel.types";
 import CheckForGoodWords from "../utils/CheckForGoodWords";
 
-const execFile2 = promisify(execFile);
 const outputPath = "./public/output.mp3";
 let isDownloading = false;
+
+const ytdlp = new YTDlpWrap('./public/yt-dlp.exe');
 
 const tryToSend = (channel: TextChannel, msg: string, author: User) => {
   const name = channel.guild.name;
@@ -117,22 +117,17 @@ export default (client: Client): void => {
   });
 };
 
-const timeBasedCommands = (msg: VoiceMessage) => {
+const timeBasedCommands = async (msg: VoiceMessage) => {
   const d = new Date();
 
   if (d.getHours() === 3 && d.getMinutes() === 0) {
     // sus youtube file
-    if (!fs.existsSync(outputPath) && !isDownloading) {
+    if (!fs.existsSync(outputPath) && !isDownloading && ytdlp) {
       isDownloading = true;
       const randomnumber = Math.floor(Math.random() * susaudioclips.length);
-      execFile2("./public/yt-dlp.exe", [
-        "-x",
-        "--audio-format",
-        "mp3",
-        "-o",
-        outputPath,
-        susaudioclips[randomnumber],
-      ]).then(() => {
+      
+      Print("Started downloading sus audio clip");
+      ytdlp.execPromise([susaudioclips[randomnumber], "-x", "--audio-format", "mp3", "-o", outputPath]).then(() => {
         Print("Downloaded Sus file at 3AM");
         isDownloading = false;
         PlaySoundEffect(msg.guild, outputPath);

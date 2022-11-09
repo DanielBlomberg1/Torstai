@@ -146,12 +146,28 @@ export const fetchOffencesForUserBeforeDate = async function (
   user: User,
   date: Date
 ) {
-  let offs = await fetchOffencesForUser(guild, user);
+  const offs = await fetchOffencesForUser(guild, user);
   if (offs) {
     offs.filter((o: OffenceType) => {
       o.commitedOn.getTime() < date.getTime();
     });
   }
+
+  return offs;
+};
+
+export const fetchGoodDeeds = async function () {
+  const usersArray = await usersmodel.find({});
+
+  const offs: OffenceType[] =[];
+
+  usersArray.forEach((u: { Offences: OffenceType[] }) => {
+    u.Offences.forEach((o: OffenceType) => {
+      if (o.offenceType == 2) {
+        offs?.push(o);
+      }
+    });
+  });
 
   return offs;
 };
