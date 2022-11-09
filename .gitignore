@@ -132,4 +132,4 @@ dist
 .pnp.*
 
 #application data storage
-data.json
+/public/yt-dlp.exe
