@@ -1,3 +1,4 @@
+import { AddmanualKarma } from './commands/AddManualKarma';
 import { CrimesBefore } from "./commands/CrimesBefore";
 import { CriminalRecord } from "./commands/CriminalRecord";
 import { Configure } from "./commands/ConfigureServer";
@@ -16,4 +17,5 @@ export const Commands: Command[] = [
   GetStandings,
   CriminalRecord,
   CrimesBefore,
+  AddmanualKarma
 ];
