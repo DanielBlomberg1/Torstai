@@ -14,7 +14,7 @@ export const AddmanualKarma: Command = {
   name: "addkarma",
   description: "fetch number of crimes user has commited since certain date",
   type: ApplicationCommandType.ChatInput,
-  defaultMemberPermissions: PermissionFlagsBits.Administrator,
+  defaultMemberPermissions: PermissionFlagsBits.BanMembers,
   options: [
     {
       name: "user",
