@@ -14,17 +14,13 @@ export default async (
   let total = 0;
 
   msg.split(/\s+/).forEach((word: string) => {
-    total += checkWords(word)
-  }); 
+    total += checkWords(word);
+  });
 
   if (total < 0) {
     const commitedAt = new Date();
     let karmaPenalty = 0;
-    const offenceString =
-      "Detected blacklisted word(s) in by the user " +
-      author.username +
-      " the message content was: " +
-      msg;
+    const offenceString = author.username + ": " + msg;
 
     if (offenceType === 0) {
       karmaPenalty = total;
@@ -75,6 +71,6 @@ function checkWords(word: string): number {
       total += severity(value);
     }
   }
-  
+
   return total;
 }
