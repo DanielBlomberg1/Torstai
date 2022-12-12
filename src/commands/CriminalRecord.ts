@@ -46,6 +46,8 @@ export const CriminalRecord: Command = {
         latestfive.forEach((u) => {
           if (content.length < 1500) {
             content +=
+              user.username +
+              ": " +
               u.offenceDescription +
               " | " +
               u.karmaChange +

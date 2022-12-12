@@ -50,7 +50,7 @@ export const Crimes: Command = {
 
         offenceList.forEach((u) => {
           if(content.length < 1500){
-            content += u.offenceDescription + " | " + u.karmaChange + "\n";
+            content += user.username + ": " + u.offenceDescription + " | " + u.karmaChange + "\n";
           }
         });
         content += "```";

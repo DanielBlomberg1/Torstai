@@ -10,10 +10,12 @@ import { Record } from "./commands/Record";
 import { GetStandings } from "./commands/GetStadings";
 
 export const Commands: Command[] = [
+  AddmanualKarma,
   Test,
   JoinVC,
   Disconnect,
   Crimes,
   Configure,
+  CriminalRecord,
   GetStandings,
 ];

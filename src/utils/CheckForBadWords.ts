@@ -20,7 +20,7 @@ export default async (
   if (total < 0) {
     const commitedAt = new Date();
     let karmaPenalty = 0;
-    const offenceString = author.username + ": " + msg;
+    const offenceString = msg;
 
     if (offenceType === 0) {
       karmaPenalty = total;
