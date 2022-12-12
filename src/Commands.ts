@@ -15,7 +15,4 @@ export const Commands: Command[] = [
   Disconnect,
   Configure,
   GetStandings,
-  CriminalRecord,
-  CrimesBefore,
-  AddmanualKarma
 ];

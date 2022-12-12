@@ -1,7 +1,16 @@
 import { Guild, User } from "discord.js";
 import configmodel from "./schemas/serverconfig";
-import usersmodel from "./schemas/usersmodel";
-import { OffenceType } from "./schemas/usersmodel.types";
+import offencesmodel from "./schemas/offencesmodel";
+import {
+  IOffences,
+  IOffencesModel,
+  OffenceType,
+  YearlyOffences,
+  WeeklyOffences,
+} from "./schemas/offencesmodel.types";
+
+import { getCurrentWeek, getCurrentYear } from "../utils/dateUtils";
+import { Print } from "../utils/Print";
 
 const putOptions = { upsert: true, new: true, setDefaultsOnInsert: true };
 
@@ -51,67 +60,265 @@ export const putConfiguration = async function (
   model?.save();
 };
 
+const updateForNewYear = async function (
+  guild: Guild,
+  user: User,
+  off: OffenceType,
+  karmagained: number,
+  oneUser: IOffences,
+  week: number,
+  year: number
+) {
+  const newOffence: OffenceType = {
+    offenceType: off.offenceType,
+    offenceDescription: off.offenceDescription,
+    commitedOn: off.commitedOn,
+    newKarma: 1500 + karmagained,
+    karmaChange: karmagained,
+  };
+
+  const newYearly: YearlyOffences = {
+    year: year,
+    yearlyKarma: 1500 + karmagained,
+    weeklyData: [
+      {
+        weekNumber: week,
+        weeklyKarma: 1500 + karmagained,
+        Offences: [newOffence],
+      },
+    ],
+  };
+
+  const update = {
+    yearlyOffences: [newYearly, ...oneUser.yearlyOffences],
+  };
+
+  const model = await offencesmodel.findOneAndUpdate(
+    { guildId: guild.id, userId: user.id },
+    update,
+    putOptions
+  );
+  model?.save();
+};
+
+const updateForNewWeek = async function (
+  guild: Guild,
+  user: User,
+  off: OffenceType,
+  karmagained: number,
+  oneUser: IOffences,
+  week: number,
+  year: number,
+  yearly: YearlyOffences
+) {
+  const newOffence: OffenceType = {
+    offenceType: off.offenceType,
+    offenceDescription: off.offenceDescription,
+    commitedOn: off.commitedOn,
+    newKarma: 1500 + karmagained,
+    karmaChange: karmagained,
+  };
+
+  let newYearly: YearlyOffences = yearly;
+  newYearly.weeklyData.push({
+    weekNumber: week,
+    weeklyKarma: 1500 + karmagained,
+    Offences: [newOffence],
+  });
+
+  newYearly.yearlyKarma += karmagained;
+
+  const update = {
+    yearlyOffences: [
+      newYearly,
+      ...oneUser.yearlyOffences.filter((y: any) => y.year !== year),
+    ],
+  };
+
+  const model = await offencesmodel.findOneAndUpdate(
+    { guildId: guild.id, userId: user.id },
+    update,
+    putOptions
+  );
+  model?.save();
+};
+
+const updateForExistingWeek = async function (
+  guild: Guild,
+  user: User,
+  off: OffenceType,
+  karmagained: number,
+  oneUser: IOffences,
+  week: number,
+  year: number,
+  weekly: WeeklyOffences,
+  yearly: YearlyOffences
+) {
+  const newOffence: OffenceType = {
+    offenceType: off.offenceType,
+    offenceDescription: off.offenceDescription,
+    commitedOn: off.commitedOn,
+    newKarma: weekly.weeklyKarma + karmagained,
+    karmaChange: karmagained,
+  };
+
+  let newYearly: YearlyOffences = yearly;
+
+  [...newYearly.weeklyData.filter((w) => w.weekNumber === week)].push({
+    weekNumber: week,
+    weeklyKarma: weekly.weeklyKarma + karmagained,
+    Offences: [...weekly.Offences, newOffence],
+  });
+  newYearly.yearlyKarma += karmagained;
+  newYearly.year = year;
+
+  const update = {
+    yearlyOffences: [
+      newYearly,
+      ...oneUser.yearlyOffences.filter((y: any) => y.year !== year),
+    ],
+  };
+
+  const model = await offencesmodel.findOneAndUpdate(
+    { guildId: guild.id, userId: user.id },
+    update,
+    putOptions
+  );
+  model?.save();
+};
+
+const updateExistingOffences = async function (
+  guild: Guild,
+  user: User,
+  off: OffenceType,
+  karmagained: number,
+  oneUser: IOffences
+) {
+  // ignore for now
+  const week = getCurrentWeek();
+  console.log(week);
+  const year = getCurrentYear();
+
+  const yearly: YearlyOffences | undefined = oneUser.yearlyOffences.filter(
+    (y) => y.year === year
+  )[0] || undefined;
+
+  if (!yearly) {
+    // no data for this year
+    updateForNewYear(guild, user, off, karmagained, oneUser, week, year);
+    return;
+  }
+
+  let weekly: WeeklyOffences | undefined = yearly?.weeklyData.filter(
+    (w) => w.weekNumber === week
+  )[0];
+
+  if (!weekly) {
+    // no data for this week
+    updateForNewWeek(
+      guild,
+      user,
+      off,
+      karmagained,
+      oneUser,
+      week,
+      year,
+      yearly
+    );
+    return;
+  }
+
+  // update for existing week
+  updateForExistingWeek(
+    guild,
+    user,
+    off,
+    karmagained,
+    oneUser,
+    week,
+    year,
+    weekly,
+    yearly
+  );
+};
+
+const createNewOffenceUser = async function (
+  guild: Guild,
+  user: User,
+  off: OffenceType,
+  karmagained: number
+) {
+  const week = getCurrentWeek();
+  const update: IOffences = {
+    guildId: guild.id,
+    userId: user.id,
+    yearlyOffences: [
+      {
+        year: getCurrentYear(),
+        yearlyKarma: 1500 + karmagained,
+        weeklyData: [
+          {
+            weekNumber: week,
+            weeklyKarma: 1500 + karmagained,
+            Offences: [
+              {
+                offenceType: off.offenceType,
+                offenceDescription: off.offenceDescription,
+                commitedOn: off.commitedOn,
+                newKarma: 1500 + karmagained,
+                karmaChange: karmagained,
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  };
+  const model = await offencesmodel.findOneAndUpdate(
+    { guildId: guild.id, userId: user.id },
+    update,
+    putOptions
+  );
+  model?.save();
+};
+
 export const putOffence = async function (
   guild: Guild,
   user: User,
   off: OffenceType,
   karmagained: number
 ) {
-  const oneUser = await usersmodel.findOne({
+  const oneUser: IOffences | null = await offencesmodel.findOne({
     guildId: guild.id,
     userId: user.id,
   });
-  if (oneUser && oneUser.karma) {
-    // ignore for now
-    const newOffences = [...oneUser.Offences];
 
-    newOffences.push({
-      offenceType: off.offenceType,
-      offenceDescription: off.offenceDescription,
-      commitedOn: off.commitedOn,
-      karmaChange: karmagained,
-    });
+  Print("tried to put offence");
 
-    const update = {
-      karma: oneUser.karma + karmagained,
-      Offences: [...newOffences],
-    };
-    const model = await usersmodel.findOneAndUpdate(
-      { guildId: guild.id, userId: user.id },
-      update,
-      putOptions
-    );
-    model?.save();
+  if (oneUser && oneUser.yearlyOffences.length > 0) {
+    Print("tried to put update existing offence");
+    updateExistingOffences(guild, user, off, karmagained, oneUser);
   } else {
-    const update = {
-      guildId: guild.id,
-      userId: user.id,
-      karma: 1500 + karmagained,
-      Offences: [
-        {
-          offenceType: off.offenceType,
-          offenceDescription: off.offenceDescription,
-          commitedOn: off.commitedOn,
-          karmaChange: karmagained,
-        },
-      ],
-    };
-    const model = await usersmodel.findOneAndUpdate(
-      { guildId: guild.id, userId: user.id },
-      update,
-      putOptions
-    );
-    model?.save();
+    Print("tried to put create new offence");
+    createNewOffenceUser(guild, user, off, karmagained);
   }
 };
 
+// returns current weeks standings
 export const fetchStandings = async function (guild: Guild) {
-  const allUsers = await usersmodel.find({ guildId: guild.id });
+  const allUsers = await offencesmodel.find({ guildId: guild.id });
   const userlist: { userId: string; karma: number }[] = [];
 
-  allUsers.forEach((u: { userId: string; karma: number }) => {
-    if (u.userId && u.karma) {
-      userlist.push({ userId: u.userId, karma: u.karma });
+  const week = getCurrentWeek();
+  const year = getCurrentYear();
+
+  allUsers.forEach((u: any) => {
+    if (u.userId && u.yearlyOffences.length > 0) {
+      const thisWeek = u.yearlyOffences
+        .filter((y: YearlyOffences) => y.year === year)[0]
+        .weeklyData.filter((w: WeeklyOffences) => w.weekNumber === week)[0];
+      if (thisWeek)
+        userlist.push({ userId: u.userId, karma: thisWeek.weeklyKarma });
     }
   });
 
@@ -123,14 +330,17 @@ export const fetchStandings = async function (guild: Guild) {
 };
 
 export const fetchOffencesForUser = async function (guild: Guild, user: User) {
-  const theUser = await usersmodel.findOne({
+  const theUser: IOffencesModel | null = await offencesmodel.findOne({
     guildId: guild.id,
     userId: user.id,
   });
 
-  const offs: OffenceType[] | undefined = theUser?.Offences.filter(
-    (offence: OffenceType) => offence.offenceType != 2
-  );
+  return undefined;
+
+  /*
+  const week = getCurrentWeek();
+  const year = getCurrentYear();
+
 
   if (offs) {
     offs.sort((a: OffenceType, b: OffenceType) => {
@@ -139,6 +349,7 @@ export const fetchOffencesForUser = async function (guild: Guild, user: User) {
   }
 
   return offs;
+  */
 };
 
 export const fetchOffencesForUserBeforeDate = async function (
@@ -147,20 +358,22 @@ export const fetchOffencesForUserBeforeDate = async function (
   date: Date
 ) {
   const offs = await fetchOffencesForUser(guild, user);
+  /*
   if (offs) {
     offs.filter((o: OffenceType) => {
       o.commitedOn.getTime() < date.getTime();
     });
   }
+  */
 
   return offs;
 };
 
 export const fetchGoodDeeds = async function () {
-  const usersArray = await usersmodel.find({});
+  const usersArray = await offencesmodel.find({});
 
-  const offs: OffenceType[] =[];
-
+  const offs: OffenceType[] = [];
+  /*
   usersArray.forEach((u: { Offences: OffenceType[] }) => {
     u.Offences.forEach((o: OffenceType) => {
       if (o.offenceType == 2) {
@@ -168,6 +381,7 @@ export const fetchGoodDeeds = async function () {
       }
     });
   });
+  */
 
   return offs;
 };

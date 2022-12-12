@@ -1,4 +1,4 @@
-import { OffenceEnum, OffenceType } from './../Database/schemas/usersmodel.types';
+import { OffenceEnum, OffenceType } from '../Database/schemas/offencesmodel.types';
 import { putOffence } from "./../Database/Mongoose";
 import {
   CommandInteraction,
@@ -40,6 +40,7 @@ export const AddmanualKarma: Command = {
       const offence: OffenceType = {
         commitedOn: date,
         karmaChange: karmaAmount,
+        newKarma: 1500,
         offenceType: OffenceEnum.other,
         offenceDescription: date.toUTCString() + " " + "added karma by admin",
       };

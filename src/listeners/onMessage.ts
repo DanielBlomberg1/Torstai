@@ -1,6 +1,6 @@
 import { Client, Message } from "discord.js";
 import CheckForGoodWords from "../utils/CheckForGoodWords";
-import { OffenceEnum } from "../Database/schemas/usersmodel.types";
+import { OffenceEnum } from "../Database/schemas/offencesmodel.types";
 import CheckForBadWords from "../utils/CheckForBadWords";
 
 // this is not working for whatever reason

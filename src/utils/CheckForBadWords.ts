@@ -2,7 +2,7 @@ import { putOffence } from "./../Database/Mongoose";
 import { Guild, User } from "discord.js";
 import { en } from "./en";
 import { fi } from "./fi";
-import { OffenceEnum, OffenceType } from "../Database/schemas/usersmodel.types";
+import { OffenceEnum, OffenceType } from "../Database/schemas/offencesmodel.types";
 import { Print } from "./Print";
 
 export default async (
@@ -32,6 +32,7 @@ export default async (
     const offence: OffenceType = {
       commitedOn: commitedAt,
       karmaChange: karmaPenalty,
+      newKarma: 1500,
       offenceType: offenceType,
       offenceDescription: offenceString,
     };

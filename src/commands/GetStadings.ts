@@ -1,6 +1,7 @@
 import { CommandInteraction, Client, ApplicationCommandType } from "discord.js";
 import { Command } from "../interfaces/Command";
 import { fetchStandings } from "../Database/Mongoose";
+import { getCurrentWeek } from "src/utils/dateUtils";
 
 export const GetStandings: Command = {
   name: "getstandings",
@@ -8,10 +9,11 @@ export const GetStandings: Command = {
   type: ApplicationCommandType.ChatInput,
   run: async (client: Client, interaction: CommandInteraction) => {
     let content = "success";
+    const week = getCurrentWeek();
 
     if (interaction.guild) {
       const userlist = await fetchStandings(interaction.guild);
-      content = interaction.guild.name + " : Karma Leaderboard \n";
+      content = interaction.guild.name + " : Karma Leaderboard : Week : " + week + "\n";
       if (userlist.length > 0) {
         content += "```";
         userlist.forEach((u) => {

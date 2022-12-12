@@ -9,7 +9,7 @@ import { PlaySoundEffect } from "../audio/SoundEffectPlayer";
 import { Print } from "../utils/Print";
 import { audioclips, susaudioclips } from "../utils/audioclips";
 import CheckForBadWords from "../utils/CheckForBadWords";
-import { OffenceEnum } from "../Database/schemas/usersmodel.types";
+import { OffenceEnum } from "../Database/schemas/offencesmodel.types";
 import CheckForGoodWords from "../utils/CheckForGoodWords";
 
 const outputPath = "./public/output.mp3";
