@@ -3,14 +3,12 @@ import configmodel from "./schemas/serverconfig";
 import offencesmodel from "./schemas/offencesmodel";
 import {
   IOffences,
-  IOffencesModel,
   OffenceType,
   YearlyOffences,
   WeeklyOffences,
 } from "./schemas/offencesmodel.types";
 
 import { getCurrentWeek, getCurrentYear } from "../utils/dateUtils";
-import { Print } from "../utils/Print";
 
 const putOptions = { upsert: true, new: true, setDefaultsOnInsert: true };
 
@@ -164,11 +162,11 @@ const updateForExistingWeek = async function (
 
   let newYearly: YearlyOffences = yearly;
 
-  [...newYearly.weeklyData.filter((w) => w.weekNumber === week)].push({
-    weekNumber: week,
-    weeklyKarma: weekly.weeklyKarma + karmagained,
-    Offences: [...weekly.Offences, newOffence],
-  });
+  newYearly.weeklyData.filter((w) => w.weekNumber === week)[0].Offences.push(
+    newOffence
+  );
+  
+  newYearly.weeklyData.filter((w) => w.weekNumber === week)[0].weeklyKarma += karmagained;
   newYearly.yearlyKarma += karmagained;
   newYearly.year = year;
 
@@ -227,7 +225,6 @@ const updateExistingOffences = async function (
     );
     return;
   }
-
   // update for existing week
   updateForExistingWeek(
     guild,
@@ -293,13 +290,9 @@ export const putOffence = async function (
     userId: user.id,
   });
 
-  Print("tried to put offence");
-
   if (oneUser && oneUser.yearlyOffences.length > 0) {
-    Print("tried to put update existing offence");
     updateExistingOffences(guild, user, off, karmagained, oneUser);
   } else {
-    Print("tried to put create new offence");
     createNewOffenceUser(guild, user, off, karmagained);
   }
 };
