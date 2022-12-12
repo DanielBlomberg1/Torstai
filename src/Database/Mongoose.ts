@@ -63,7 +63,7 @@ const updateForNewYear = async function (
   user: User,
   off: OffenceType,
   karmagained: number,
-  oneUser: IOffences,
+  offender: IOffences,
   week: number,
   year: number
 ) {
@@ -88,7 +88,7 @@ const updateForNewYear = async function (
   };
 
   const update = {
-    yearlyOffences: [newYearly, ...oneUser.yearlyOffences],
+    yearlyOffences: [newYearly, ...offender.yearlyOffences],
   };
 
   const model = await offencesmodel.findOneAndUpdate(
@@ -104,7 +104,7 @@ const updateForNewWeek = async function (
   user: User,
   off: OffenceType,
   karmagained: number,
-  oneUser: IOffences,
+  offender: IOffences,
   week: number,
   year: number,
   yearly: YearlyOffences
@@ -129,7 +129,7 @@ const updateForNewWeek = async function (
   const update = {
     yearlyOffences: [
       newYearly,
-      ...oneUser.yearlyOffences.filter((y: any) => y.year !== year),
+      ...offender.yearlyOffences.filter((y: any) => y.year !== year),
     ],
   };
 
@@ -146,7 +146,7 @@ const updateForExistingWeek = async function (
   user: User,
   off: OffenceType,
   karmagained: number,
-  oneUser: IOffences,
+  offender: IOffences,
   week: number,
   year: number,
   weekly: WeeklyOffences,
@@ -173,7 +173,7 @@ const updateForExistingWeek = async function (
   const update = {
     yearlyOffences: [
       newYearly,
-      ...oneUser.yearlyOffences.filter((y: any) => y.year !== year),
+      ...offender.yearlyOffences.filter((y: any) => y.year !== year),
     ],
   };
 
@@ -190,20 +190,18 @@ const updateExistingOffences = async function (
   user: User,
   off: OffenceType,
   karmagained: number,
-  oneUser: IOffences
+  offender: IOffences
 ) {
-  // ignore for now
   const week = getCurrentWeek();
-  console.log(week);
   const year = getCurrentYear();
 
-  const yearly: YearlyOffences | undefined = oneUser.yearlyOffences.filter(
+  const yearly: YearlyOffences | undefined = offender.yearlyOffences.filter(
     (y) => y.year === year
   )[0] || undefined;
 
   if (!yearly) {
     // no data for this year
-    updateForNewYear(guild, user, off, karmagained, oneUser, week, year);
+    updateForNewYear(guild, user, off, karmagained, offender, week, year);
     return;
   }
 
@@ -218,7 +216,7 @@ const updateExistingOffences = async function (
       user,
       off,
       karmagained,
-      oneUser,
+      offender,
       week,
       year,
       yearly
@@ -231,7 +229,7 @@ const updateExistingOffences = async function (
     user,
     off,
     karmagained,
-    oneUser,
+    offender,
     week,
     year,
     weekly,
@@ -285,13 +283,13 @@ export const putOffence = async function (
   off: OffenceType,
   karmagained: number
 ) {
-  const oneUser: IOffences | null = await offencesmodel.findOne({
+  const offender: IOffences | null = await offencesmodel.findOne({
     guildId: guild.id,
     userId: user.id,
   });
 
-  if (oneUser && oneUser.yearlyOffences.length > 0) {
-    updateExistingOffences(guild, user, off, karmagained, oneUser);
+  if (offender && offender.yearlyOffences.length > 0) {
+    updateExistingOffences(guild, user, off, karmagained, offender);
   } else {
     createNewOffenceUser(guild, user, off, karmagained);
   }
