@@ -306,11 +306,16 @@ export const putOffence = async function (
 
 // returns current weeks standings
 export const fetchStandings = async function (guild: Guild) {
-  const allUsers = await offencesmodel.find({ guildId: guild.id });
-  const userlist: { userId: string; karma: number }[] = [];
 
   const week = getCurrentWeek();
   const year = getCurrentYear();
+
+  return fetchStandingsForGivenWeek(guild, week, year);
+};
+
+export const fetchStandingsForGivenWeek = async function (guild: Guild, week: number, year: number) {
+  const allUsers = await offencesmodel.find({ guildId: guild.id });
+  const userlist: { userId: string; karma: number }[] = [];
 
   allUsers.forEach((u: any) => {
     if (u.userId && u.yearlyOffences.length > 0) {
@@ -330,41 +335,28 @@ export const fetchStandings = async function (guild: Guild) {
 };
 
 export const fetchOffencesForUser = async function (guild: Guild, user: User) {
-  const theUser: IOffencesModel | null = await offencesmodel.findOne({
+  const theUser: IOffences | null = await offencesmodel.findOne({
     guildId: guild.id,
     userId: user.id,
   });
 
-  return undefined;
-
-  /*
   const week = getCurrentWeek();
   const year = getCurrentYear();
 
+  let offs: OffenceType[] = [];
+
+  if (theUser) {
+    const thisWeek = theUser.yearlyOffences
+      .filter((y: YearlyOffences) => y.year === year)[0]
+      .weeklyData.filter((w: WeeklyOffences) => w.weekNumber === week)[0];
+    offs = thisWeek.Offences;
+  }
 
   if (offs) {
     offs.sort((a: OffenceType, b: OffenceType) => {
       return b.commitedOn.getTime() - a.commitedOn.getTime();
     });
   }
-
-  return offs;
-  */
-};
-
-export const fetchOffencesForUserBeforeDate = async function (
-  guild: Guild,
-  user: User,
-  date: Date
-) {
-  const offs = await fetchOffencesForUser(guild, user);
-  /*
-  if (offs) {
-    offs.filter((o: OffenceType) => {
-      o.commitedOn.getTime() < date.getTime();
-    });
-  }
-  */
 
   return offs;
 };

@@ -1,4 +1,4 @@
-import { fetchOffencesForUserBeforeDate } from "./../Database/Mongoose";
+import { fetchOffencesForUser } from "../Database/Mongoose";
 import {
   CommandInteraction,
   Client,
@@ -9,8 +9,8 @@ import {
 } from "discord.js";
 import { Command } from "../interfaces/Command";
 
-export const CrimesBefore: Command = {
-  name: "crimesbefore",
+export const Crimes: Command = {
+  name: "crimes",
   description: "fetch number of crimes user has commited since certain date",
   type: ApplicationCommandType.ChatInput,
   defaultMemberPermissions: PermissionFlagsBits.AddReactions,
@@ -22,27 +22,25 @@ export const CrimesBefore: Command = {
       required: true,
     },
     {
-      name: "hours",
+      name: "amount",
       type: ApplicationCommandOptionType.Integer,
-      description: "Number of Hours to Check",
-      required: true,
+      description: "amount of crimes to fetch",
+      required: false,
     },
   ],
   run: async (client: Client, interaction: CommandInteraction) => {
     let content = "failed";
     const user = interaction.options.get("user")?.user as User;
-    const hours = interaction.options.get("hours")?.value as number;
+    const amount = interaction.options.get("amount")?.value as number;
 
     if (interaction.guild) {
       const date = new Date();
 
-      date.setHours(date.getHours() - (hours < 10 ? hours : 10));
-
-      const offenceList = await fetchOffencesForUserBeforeDate(
+      const offenceList = await fetchOffencesForUser(
         interaction.guild,
         user,
-        date
       );
+
       content =
         user.username + " : Crimes since " + date.getUTCDate() + " 👮\n";
       const amount = offenceList?.length ? offenceList?.length : 0;

@@ -1,5 +1,5 @@
 import { AddmanualKarma } from './commands/AddManualKarma';
-import { CrimesBefore } from "./commands/CrimesBefore";
+import { Crimes } from "./commands/Crimes";
 import { CriminalRecord } from "./commands/CriminalRecord";
 import { Configure } from "./commands/ConfigureServer";
 import { JoinVC } from "./commands/JoinVoice";
@@ -13,6 +13,7 @@ export const Commands: Command[] = [
   Test,
   JoinVC,
   Disconnect,
+  Crimes,
   Configure,
   GetStandings,
 ];
