@@ -343,6 +343,8 @@ export const fetchOffencesForUser = async function (guild: Guild, user: User) {
     offs = thisWeek.Offences;
   }
 
+  offs = offs.filter((o: OffenceType) => o.offenceType != 2);
+
   if (offs) {
     offs.sort((a: OffenceType, b: OffenceType) => {
       return b.commitedOn.getTime() - a.commitedOn.getTime();
