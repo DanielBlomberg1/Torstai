@@ -24,8 +24,8 @@ const offences = new Schema({
           ],
         },
       ],
-    }
-  ]
+    },
+  ],
 });
 
 const offencesmodel = model<IOffencesModel>("Offences", offences, "offences");

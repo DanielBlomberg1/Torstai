@@ -1,6 +1,7 @@
 import { Guild, User } from "discord.js";
 import configmodel from "./schemas/serverconfig";
 import offencesmodel from "./schemas/offencesmodel";
+import usersmodel from "./schemas/usersmodel";
 import {
   IOffences,
   OffenceType,
@@ -162,11 +163,12 @@ const updateForExistingWeek = async function (
 
   let newYearly: YearlyOffences = yearly;
 
-  newYearly.weeklyData.filter((w) => w.weekNumber === week)[0].Offences.push(
-    newOffence
-  );
-  
-  newYearly.weeklyData.filter((w) => w.weekNumber === week)[0].weeklyKarma += karmagained;
+  newYearly.weeklyData
+    .filter((w) => w.weekNumber === week)[0]
+    .Offences.push(newOffence);
+
+  newYearly.weeklyData.filter((w) => w.weekNumber === week)[0].weeklyKarma +=
+    karmagained;
   newYearly.yearlyKarma += karmagained;
   newYearly.year = year;
 
@@ -195,9 +197,8 @@ const updateExistingOffences = async function (
   const week = getCurrentWeek();
   const year = getCurrentYear();
 
-  const yearly: YearlyOffences | undefined = offender.yearlyOffences.filter(
-    (y) => y.year === year
-  )[0] || undefined;
+  const yearly: YearlyOffences | undefined =
+    offender.yearlyOffences.filter((y) => y.year === year)[0] || undefined;
 
   if (!yearly) {
     // no data for this year
@@ -277,6 +278,10 @@ const createNewOffenceUser = async function (
   model?.save();
 };
 
+const createNewUser = async function (user: User) {
+  await usersmodel.create({ userId: user.id, username: user.username });
+};
+
 export const putOffence = async function (
   guild: Guild,
   user: User,
@@ -288,6 +293,12 @@ export const putOffence = async function (
     userId: user.id,
   });
 
+  const usermodel = await usersmodel.findOne({ userId: user.id });
+
+  if (!usermodel) {
+    createNewUser(user);
+  }
+
   if (offender && offender.yearlyOffences.length > 0) {
     updateExistingOffences(guild, user, off, karmagained, offender);
   } else {
@@ -297,14 +308,17 @@ export const putOffence = async function (
 
 // returns current weeks standings
 export const fetchStandings = async function (guild: Guild) {
-
   const week = getCurrentWeek();
   const year = getCurrentYear();
 
   return fetchStandingsForGivenWeek(guild, week, year);
 };
 
-export const fetchStandingsForGivenWeek = async function (guild: Guild, week: number, year: number) {
+export const fetchStandingsForGivenWeek = async function (
+  guild: Guild,
+  week: number,
+  year: number
+) {
   const allUsers = await offencesmodel.find({ guildId: guild.id });
   const userlist: { userId: string; karma: number }[] = [];
 
