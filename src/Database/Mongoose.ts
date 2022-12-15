@@ -1,4 +1,4 @@
-import { Guild, User } from "discord.js";
+import { Guild, User, userMention } from "discord.js";
 import configmodel from "./schemas/serverconfig";
 import offencesmodel from "./schemas/offencesmodel";
 import usersmodel from "./schemas/usersmodel";
@@ -57,6 +57,20 @@ export const putConfiguration = async function (
     putOptions
   );
   model?.save();
+};
+
+export const putUsers = async function (guild: Guild | null) {
+  if (!guild) return;
+
+  const users = await guild.members.fetch();
+
+  users.forEach((member) => {
+    const usermodel = usersmodel.findOne({ userId: member.user.id });
+
+    if (!usermodel) {
+      createNewUser(member.user);
+    }
+  });
 };
 
 const updateForNewYear = async function (
@@ -279,7 +293,12 @@ const createNewOffenceUser = async function (
 };
 
 const createNewUser = async function (user: User) {
-  await usersmodel.create({ userId: user.id, username: user.username });
+  const usermodel = await usersmodel.create({
+    userId: user.id,
+    username: user.username,
+  });
+
+  usermodel?.save();
 };
 
 export const putOffence = async function (
@@ -293,10 +312,8 @@ export const putOffence = async function (
     userId: user.id,
   });
 
-  const usermodel = await usersmodel.findOne({ userId: user.id });
-
-  if (!usermodel) {
-    createNewUser(user);
+  if (!(await usersmodel.findOne({ userId: user.id }))) {
+    createNewUser(user.id, user.username);
   }
 
   if (offender && offender.yearlyOffences.length > 0) {

@@ -4,11 +4,12 @@ import {
   ApplicationCommandType,
   ApplicationCommandOptionData,
   ApplicationCommandOptionType,
+  Guild,
   ChannelType,
 } from "discord.js";
 import { Print } from "../utils/Print";
 import { Command } from "../interfaces/Command";
-import { putConfiguration } from "../Database/Mongoose";
+import { putConfiguration, putUsers } from "../Database/Mongoose";
 
 export const Configure: Command = {
   name: "configure",
@@ -41,6 +42,7 @@ export const Configure: Command = {
       interaction.options.data[0].channel?.id;
     const commandPrefix = interaction.options.get("commandprefix");
     const boolean = interaction.options.get("autojoin")?.value;
+    const guild: Guild | null = interaction.guild;
 
     // save into mongo
     if (guildId && channelId) {
@@ -50,6 +52,8 @@ export const Configure: Command = {
         commandPrefix?.value as string,
         boolean as boolean
       );
+
+      await putUsers(guild);
     }
     const content =
       "Added textchannel " +
