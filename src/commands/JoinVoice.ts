@@ -5,9 +5,11 @@ import {
   ChannelType,
   ApplicationCommandOptionData,
   ApplicationCommandOptionType,
-  InternalDiscordGatewayAdapterCreator,
 } from "discord.js";
-import { joinVoiceChannel } from "@discordjs/voice";
+import {
+  DiscordGatewayAdapterCreator,
+  joinVoiceChannel,
+} from "@discordjs/voice";
 import { Command } from "../interfaces/Command";
 
 export const JoinVC: Command = {
@@ -30,7 +32,7 @@ export const JoinVC: Command = {
       channelId: String(channel?.channel?.id),
       guildId: interaction.guild?.id as string,
       adapterCreator: interaction.guild
-        ?.voiceAdapterCreator as InternalDiscordGatewayAdapterCreator,
+        ?.voiceAdapterCreator as DiscordGatewayAdapterCreator,
       selfDeaf: false,
     });
 

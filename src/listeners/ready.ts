@@ -1,10 +1,9 @@
 import { fetchAutoJoin } from "./../Database/Mongoose";
-import { joinVoiceChannel } from "@discordjs/voice";
 import {
-  Client,
-  Guild,
-  InternalDiscordGatewayAdapterCreator,
-} from "discord.js";
+  DiscordGatewayAdapterCreator,
+  joinVoiceChannel,
+} from "@discordjs/voice";
+import { Client, Guild } from "discord.js";
 import { Print } from "../utils/Print";
 import { Commands } from "../Commands";
 
@@ -38,7 +37,7 @@ export default (client: Client): void => {
             channelId: curId,
             guildId: g.id as string,
             adapterCreator:
-              g.voiceAdapterCreator as InternalDiscordGatewayAdapterCreator,
+              g.voiceAdapterCreator as DiscordGatewayAdapterCreator,
             selfDeaf: false,
           });
           Print(

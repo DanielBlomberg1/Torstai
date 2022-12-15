@@ -65,11 +65,7 @@ export const putUsers = async function (guild: Guild | null) {
   const users = await guild.members.fetch();
 
   users.forEach((member) => {
-    const usermodel = usersmodel.findOne({ userId: member.user.id });
-
-    if (!usermodel) {
-      createNewUser(member.user);
-    }
+    createNewUser(member.user);
   });
 };
 
@@ -132,7 +128,7 @@ const updateForNewWeek = async function (
     karmaChange: karmagained,
   };
 
-  let newYearly: YearlyOffences = yearly;
+  const newYearly: YearlyOffences = yearly;
   newYearly.weeklyData.push({
     weekNumber: week,
     weeklyKarma: 1500 + karmagained,
@@ -175,7 +171,7 @@ const updateForExistingWeek = async function (
     karmaChange: karmagained,
   };
 
-  let newYearly: YearlyOffences = yearly;
+  const newYearly: YearlyOffences = yearly;
 
   newYearly.weeklyData
     .filter((w) => w.weekNumber === week)[0]
@@ -220,7 +216,7 @@ const updateExistingOffences = async function (
     return;
   }
 
-  let weekly: WeeklyOffences | undefined = yearly?.weeklyData.filter(
+  const weekly: WeeklyOffences | undefined = yearly?.weeklyData.filter(
     (w) => w.weekNumber === week
   )[0];
 
@@ -293,12 +289,12 @@ const createNewOffenceUser = async function (
 };
 
 const createNewUser = async function (user: User) {
-  const usermodel = await usersmodel.create({
-    userId: user.id,
-    username: user.username,
-  });
-
-  usermodel?.save();
+  const model = await usersmodel.findOneAndUpdate(
+    { userId: user.id },
+    { username: user.username },
+    putOptions
+  );
+  model?.save();
 };
 
 export const putOffence = async function (
@@ -312,9 +308,7 @@ export const putOffence = async function (
     userId: user.id,
   });
 
-  if (!(await usersmodel.findOne({ userId: user.id }))) {
-    createNewUser(user);
-  }
+  createNewUser(user);
 
   if (offender && offender.yearlyOffences.length > 0) {
     updateExistingOffences(guild, user, off, karmagained, offender);

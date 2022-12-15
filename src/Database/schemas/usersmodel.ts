@@ -5,6 +5,6 @@ const users = new Schema({
   username: String,
 });
 
-const usersmodel = model("Users", users);
+const usersmodel = model("Users", users, "users");
 
 export default usersmodel;
