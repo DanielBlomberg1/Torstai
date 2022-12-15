@@ -313,7 +313,7 @@ export const putOffence = async function (
   });
 
   if (!(await usersmodel.findOne({ userId: user.id }))) {
-    createNewUser(user.id, user.username);
+    createNewUser(user);
   }
 
   if (offender && offender.yearlyOffences.length > 0) {
