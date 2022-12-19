@@ -9,7 +9,7 @@ import {
 } from "discord.js";
 import { Print } from "../utils/Print";
 import { Command } from "../interfaces/Command";
-import { putConfiguration, putUsers } from "../Database/Mongoose";
+import { putConfiguration, putGuild, putUsers } from "../Database/Mongoose";
 
 export const Configure: Command = {
   name: "configure",
@@ -54,6 +54,7 @@ export const Configure: Command = {
       );
 
       await putUsers(guild);
+      await putGuild(guild);
     }
     const content =
       "Added textchannel " +

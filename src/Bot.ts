@@ -8,6 +8,7 @@ import interaction from "./listeners/interaction";
 import voiceState from "./listeners/voiceState";
 import speech from "./listeners/speech";
 import onMessage from "./listeners/onMessage";
+import onUpdate from "./listeners/onUpdate";
 
 // db
 import { connect } from "mongoose";
@@ -39,6 +40,7 @@ voiceState(client);
 addSpeechEvent(client, { lang: "fi-FI", profanityFilter: false });
 speech(client);
 onMessage(client);
+onUpdate(client);
 
 client.login(token);
 // connect to database

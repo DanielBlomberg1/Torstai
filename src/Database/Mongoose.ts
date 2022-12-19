@@ -1,7 +1,8 @@
-import { Guild, User, userMention } from "discord.js";
+import { Guild, GuildMember, User, userMention } from "discord.js";
 import configmodel from "./schemas/serverconfig";
 import offencesmodel from "./schemas/offencesmodel";
 import usersmodel from "./schemas/usersmodel";
+import guildModel from "./schemas/guilds";
 import {
   IOffences,
   OffenceType,
@@ -10,6 +11,7 @@ import {
 } from "./schemas/offencesmodel.types";
 
 import { getCurrentWeek, getCurrentYear } from "../utils/dateUtils";
+import { GuildData, UserData } from "./schemas/guilds.types";
 
 const putOptions = { upsert: true, new: true, setDefaultsOnInsert: true };
 
@@ -67,6 +69,60 @@ export const putUsers = async function (guild: Guild | null) {
   users.forEach((member) => {
     createNewUser(member.user);
   });
+};
+
+export const putGuild = async function (guild: Guild | null) {
+  if (!guild) return;
+
+  const guildData = await getGuildData(guild);
+
+  const model = await guildModel.findOneAndUpdate(
+    { id: guildData.id },
+    guildData,
+    putOptions
+  );
+
+  model?.save();
+};
+
+export const updateGuildMember = async function (member: GuildMember) {
+  console.log("Updating user " + member.user.username);
+
+  // TODO: Only update relevant information
+  await putGuild(member.guild);
+};
+
+export const updateGuildData = async function (guild: Guild) {
+  console.log("Updating guild " + guild.name);
+
+  // TODO: Only update relevant information
+  await putGuild(guild);
+};
+
+const getGuildData = async function (guild: Guild): Promise<GuildData> {
+  const members = await guild.members.fetch();
+
+  const userData: UserData[] = [];
+
+  members.forEach((member) => {
+    userData.push({
+      id: member.id,
+      tag: member.user.tag,
+      username: member.user.username,
+      nickname: member.nickname || member.user.username,
+      avatarURL: member.user.avatarURL() || "",
+      bot: member.user.bot,
+    });
+  });
+
+  const guildData: GuildData = {
+    id: guild.id,
+    name: guild.name,
+    iconURL: guild.iconURL() || "",
+    users: userData,
+  };
+
+  return guildData;
 };
 
 const updateForNewYear = async function (
