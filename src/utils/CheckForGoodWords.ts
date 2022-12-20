@@ -5,15 +5,11 @@ import { fiGood } from "./fi";
 import { Print } from "./Print";
 
 export default async (msg: string, author: User, guild: Guild) => {
-  const total = checkWords(msg);
+  const [total, hitWords] = checkWords(msg);
 
   if (total > 0) {
     const commitedAt = new Date();
-    const offenceString =
-      "Detected good deed in a message of type:  " +
-      author.username +
-      " the message content was: " +
-      msg;
+    const offenceString = msg;
 
     const karmaBonus = Math.floor(Math.random() * 5) + total;
 
@@ -21,6 +17,7 @@ export default async (msg: string, author: User, guild: Guild) => {
     const offence: OffenceType = {
       commitedOn: commitedAt,
       karmaChange: karmaBonus,
+      flaggedWords: hitWords,
       newKarma: 1500,
       offenceType: OffenceEnum.other,
       offenceDescription: commitedAt.toUTCString() + " " + offenceString,
@@ -47,8 +44,9 @@ const severity = (n: number) => {
   }
 }
 
-const checkWords = (word: string) => {
+const checkWords = (word: string): [number, string[]] => {
   let total = 0;
+  let hitWords: string[] = [];
 
   const lowercase = word.toLowerCase();
   if(lowercase.includes("@")){
@@ -58,8 +56,9 @@ const checkWords = (word: string) => {
   for (const [key, value] of Object.entries(fiGood)){
     if(lowercase.includes(key)){
       total += severity(value);
+      hitWords.push(key);
     }
   }
 
-  return total;
+  return [total, hitWords];
 };

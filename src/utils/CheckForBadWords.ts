@@ -2,7 +2,10 @@ import { putOffence } from "./../Database/Mongoose";
 import { Guild, User } from "discord.js";
 import { en } from "./en";
 import { fi } from "./fi";
-import { OffenceEnum, OffenceType } from "../Database/schemas/offencesmodel.types";
+import {
+  OffenceEnum,
+  OffenceType,
+} from "../Database/schemas/offencesmodel.types";
 import { Print } from "./Print";
 
 export default async (
@@ -12,9 +15,13 @@ export default async (
   offenceType: OffenceEnum
 ) => {
   let total = 0;
+  let hitWords: string[] = [];
 
   msg.split(/\s+/).forEach((word: string) => {
-    total += checkWords(word);
+    let gotResults = checkWords(word);
+
+    total += gotResults[0];
+    hitWords = hitWords.concat(gotResults[1]);
   });
 
   if (total < 0) {
@@ -33,6 +40,7 @@ export default async (
       commitedOn: commitedAt,
       karmaChange: karmaPenalty,
       newKarma: 1500,
+      flaggedWords: hitWords,
       offenceType: offenceType,
       offenceDescription: offenceString,
     };
@@ -58,20 +66,24 @@ const severity = (n: number) => {
   }
 };
 
-function checkWords(word: string): number {
+function checkWords(word: string): [number, string[]] {
   let total = 0;
   const lowercase = word.toLowerCase();
+
+  let hitWords: string[] = [];
 
   for (const [key, value] of Object.entries(en)) {
     if (lowercase === key) {
       total += severity(value);
+      hitWords.push(key);
     }
   }
   for (const [key, value] of Object.entries(fi)) {
     if (lowercase === key) {
       total += severity(value);
+      hitWords.push(key as string);
     }
   }
 
-  return total;
+  return [total, hitWords];
 }

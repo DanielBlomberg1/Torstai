@@ -21,6 +21,7 @@ export interface WeeklyOffences {
 export interface OffenceType {
   offenceType: OffenceEnum;
   offenceDescription?: string;
+  flaggedWords?: string[];
   commitedOn: Date;
   karmaChange: number;
   newKarma: number;

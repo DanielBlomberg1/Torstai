@@ -17,6 +17,7 @@ const offences = new Schema({
             {
               offenceType: Number,
               offenceDescription: String,
+              flaggedWords: [String],
               commitedOn: Date,
               newKarma: Number,
               karmaChange: Number,
