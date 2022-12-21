@@ -1,18 +1,20 @@
 import { Schema, model } from "mongoose";
-import { GuildData } from "./guilds.types";
+import { GuildData, AuthLevel } from "./guilds.types";
 
 const guildSchema = new Schema({
-  id: String,
+  guildId: String,
   name: String,
   iconURL: String,
   users: [
     {
-      id: String,
+      userId: String,
       tag: String,
       username: String,
       nickname: String,
       avatarURL: String,
       bot: Boolean,
+      active: Boolean,
+      authLevel: { type: String, enum: AuthLevel, default: AuthLevel.KARHU },
     },
   ],
 });

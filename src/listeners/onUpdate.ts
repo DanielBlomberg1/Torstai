@@ -1,5 +1,10 @@
 import { Client, Guild, GuildMember, PartialGuildMember } from "discord.js";
-import { updateGuildData, updateGuildMember } from "../Database/Mongoose";
+import {
+  addGuildMember,
+  removeGuildMember,
+  updateGuildData,
+  updateGuildMember,
+} from "../Database/Mongoose";
 
 export default (client: Client): void => {
   client.on("guildMemberUpdate", (oldMember, newMember: GuildMember) => {
@@ -11,10 +16,10 @@ export default (client: Client): void => {
   });
 
   client.on("guildMemberAdd", (member: GuildMember) => {
-    updateGuildMember(member);
+    addGuildMember(member);
   });
 
   client.on("guildMemberRemove", (member: GuildMember | PartialGuildMember) => {
-    if (member instanceof GuildMember) updateGuildMember(member);
+    removeGuildMember(member);
   });
 };

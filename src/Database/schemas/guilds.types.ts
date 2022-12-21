@@ -1,15 +1,28 @@
+import { Document, Model } from "mongoose";
+
 export interface GuildData {
-  id: string;
+  guildId: string;
   name: string;
   iconURL: string;
-  users: UserData[];
+  users: MemberData[];
 }
 
-export interface UserData {
-  id: string;
+export interface MemberData {
+  userId: string;
   tag: string;
   username: string;
   nickname?: string;
   avatarURL: string;
   bot: boolean;
+  active: boolean;
+  authLevel: AuthLevel;
 }
+
+export enum AuthLevel {
+  SUPERKARHU = "SUPERKARHU",
+  KARHU = "KARHU",
+  NONE = "NONE",
+}
+
+export interface GuildDocument extends GuildData, Document {}
+export type GuildModel = Model<GuildDocument>;

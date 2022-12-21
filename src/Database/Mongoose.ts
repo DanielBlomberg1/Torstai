@@ -1,4 +1,4 @@
-import { Guild, GuildMember, User, userMention } from "discord.js";
+import { Guild, GuildMember, PartialGuildMember, User } from "discord.js";
 import configmodel from "./schemas/serverconfig";
 import offencesmodel from "./schemas/offencesmodel";
 import usersmodel from "./schemas/usersmodel";
@@ -11,7 +11,11 @@ import {
 } from "./schemas/offencesmodel.types";
 
 import { getCurrentWeek, getCurrentYear } from "../utils/dateUtils";
-import { GuildData, UserData } from "./schemas/guilds.types";
+import {
+  AuthLevel,
+  GuildData,
+  MemberData as MemberData,
+} from "./schemas/guilds.types";
 
 const putOptions = { upsert: true, new: true, setDefaultsOnInsert: true };
 
@@ -71,58 +75,126 @@ export const putUsers = async function (guild: Guild | null) {
   });
 };
 
+// Inserts new guild to database if it doesn't exist
 export const putGuild = async function (guild: Guild | null) {
   if (!guild) return;
 
-  const guildData = await getGuildData(guild);
+  if ((await guildModel.find({ guildId: guild.id }).count()) === 0) {
+    const guildData = await getGuildData(guild);
+
+    await guildModel.insertMany(guildData);
+
+    console.log("Added new guild to database");
+  } else {
+    console.log("Guild already exists in database");
+  }
+};
+
+export const addGuildMember = async function (member: GuildMember) {
+  const memberData = getMemberData(member);
+
+  await guildModel.updateOne(
+    { guildId: member.guild.id },
+    { $push: { users: memberData } }
+  );
+
+  console.log("Added new guild member to database");
+};
+
+export const removeGuildMember = async function (
+  member: GuildMember | PartialGuildMember
+) {
+  const query = { guildId: member.guild.id, "users.userId": member.id };
+  const update = {
+    active: false,
+    authLevel: AuthLevel.NONE,
+  };
+
+  await guildModel.updateOne(query, {
+    $set: {
+      "users.$.active": update.active,
+      "users.$.authLevel": update.authLevel,
+    },
+  });
+
+  console.log("Deactivated guild member from database");
+};
+
+export const updateGuildMember = async function (member: GuildMember) {
+  const query = { guildId: member.guild.id, "users.userId": member.id };
+  const update = {
+    id: member.id,
+    tag: member.user.tag,
+    username: member.user.username,
+    nickname: member.nickname || member.user.username,
+    avatarURL: member.user.avatarURL() || "",
+    bot: member.user.bot,
+  };
+
+  await guildModel.updateOne(query, {
+    $set: {
+      "users.$.id": update.id,
+      "users.$.tag": update.tag,
+      "users.$.username": update.username,
+      "users.$.nickname": update.nickname,
+      "users.$.avatarURL": update.avatarURL,
+      "users.$.bot": update.bot,
+    },
+  });
+
+  console.log("Updated user " + member.user.username);
+};
+
+export const updateGuildData = async function (guild: Guild) {
+  console.log("Updating guild " + guild.name);
+
+  const update = {
+    guildId: guild.id,
+    name: guild.name,
+    iconURL: guild.iconURL() || "",
+  };
 
   const model = await guildModel.findOneAndUpdate(
-    { id: guildData.id },
-    guildData,
+    { guildId: guild.id },
+    update,
     putOptions
   );
 
   model?.save();
 };
 
-export const updateGuildMember = async function (member: GuildMember) {
-  console.log("Updating user " + member.user.username);
-
-  // TODO: Only update relevant information
-  await putGuild(member.guild);
-};
-
-export const updateGuildData = async function (guild: Guild) {
-  console.log("Updating guild " + guild.name);
-
-  // TODO: Only update relevant information
-  await putGuild(guild);
-};
-
 const getGuildData = async function (guild: Guild): Promise<GuildData> {
   const members = await guild.members.fetch();
 
-  const userData: UserData[] = [];
+  const memberData: MemberData[] = [];
 
   members.forEach((member) => {
-    userData.push({
-      id: member.id,
-      tag: member.user.tag,
-      username: member.user.username,
-      nickname: member.nickname || member.user.username,
-      avatarURL: member.user.avatarURL() || "",
-      bot: member.user.bot,
-    });
+    memberData.push(getMemberData(member));
   });
 
   const guildData: GuildData = {
-    id: guild.id,
+    guildId: guild.id,
     name: guild.name,
     iconURL: guild.iconURL() || "",
-    users: userData,
+    users: memberData,
   };
 
   return guildData;
+};
+
+const getMemberData = function (member: GuildMember): MemberData {
+  const userData: MemberData = {
+    userId: member.id,
+    tag: member.user.tag,
+    username: member.user.username,
+    nickname: member.nickname || member.user.username,
+    avatarURL: member.user.avatarURL() || "",
+    bot: member.user.bot,
+    active: true,
+    authLevel: AuthLevel.KARHU,
+  };
+
+  return userData;
 };
 
 const updateForNewYear = async function (
