@@ -1,6 +1,9 @@
 import { Guild, User } from "discord.js";
 import { putOffence } from "../Database/Mongoose";
-import { OffenceEnum, OffenceType } from "../Database/schemas/offencesmodel.types";
+import {
+  OffenceEnum,
+  OffenceType,
+} from "../Database/schemas/offencesmodel.types";
 import { fiGood } from "./fi";
 import { Print } from "./Print";
 
@@ -9,11 +12,7 @@ export default async (msg: string, author: User, guild: Guild) => {
 
   if (total > 0) {
     const commitedAt = new Date();
-    const offenceString =
-      "Detected good deed in a message of type:  " +
-      author.username +
-      " the message content was: " +
-      msg;
+    const offenceString = msg;
 
     const karmaBonus = Math.floor(Math.random() * 5) + total;
 
@@ -23,7 +22,7 @@ export default async (msg: string, author: User, guild: Guild) => {
       karmaChange: karmaBonus,
       newKarma: 1500,
       offenceType: OffenceEnum.other,
-      offenceDescription: commitedAt.toUTCString() + " " + offenceString,
+      offenceDescription: offenceString,
     };
 
     await putOffence(guild, author, offence, karmaBonus);
@@ -31,32 +30,32 @@ export default async (msg: string, author: User, guild: Guild) => {
 };
 
 const severity = (n: number) => {
-  switch(n){
+  switch (n) {
     case 1:
       return 10;
     case 2:
-      return 20
+      return 20;
     case 3:
       return 30;
     case 4:
-      return 40
+      return 40;
     case 5:
-      return 50
+      return 50;
     default:
-      return 0
+      return 0;
   }
-}
+};
 
 const checkWords = (word: string) => {
   let total = 0;
 
   const lowercase = word.toLowerCase();
-  if(lowercase.includes("@")){
+  if (lowercase.includes("@")) {
     total += 1;
   }
 
-  for (const [key, value] of Object.entries(fiGood)){
-    if(lowercase.includes(key)){
+  for (const [key, value] of Object.entries(fiGood)) {
+    if (lowercase.includes(key)) {
       total += severity(value);
     }
   }
