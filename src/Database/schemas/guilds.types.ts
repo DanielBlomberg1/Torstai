@@ -11,7 +11,7 @@ export interface MemberData {
   userId: string;
   tag: string;
   username: string;
-  nickname?: string;
+  nickname: string;
   avatarURL: string;
   bot: boolean;
   active: boolean;
