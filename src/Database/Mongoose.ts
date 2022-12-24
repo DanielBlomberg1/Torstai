@@ -116,7 +116,9 @@ export const updateGuildMember = async function (member: GuildMember) {
     tag: member.user.tag,
     username: member.user.username,
     nickname: member.nickname || member.user.username,
-    avatarURL: member.user.avatarURL() || "",
+    avatarURL:
+      member.user.avatarURL() ||
+      "https://cdn.discordapp.com/embed/avatars/0.png",
     bot: member.user.bot,
   };
 
@@ -164,7 +166,8 @@ const getGuildData = async function (guild: Guild): Promise<GuildData> {
   const guildData: GuildData = {
     guildId: guild.id,
     name: guild.name,
-    iconURL: guild.iconURL() || "",
+    iconURL:
+      guild.iconURL() || "https://cdn.discordapp.com/embed/avatars/0.png",
     users: memberData,
   };
 
@@ -177,7 +180,9 @@ const getMemberData = function (member: GuildMember): MemberData {
     tag: member.user.tag,
     username: member.user.username,
     nickname: member.nickname || member.user.username,
-    avatarURL: member.user.avatarURL() || "",
+    avatarURL:
+      member.user.avatarURL() ||
+      "https://cdn.discordapp.com/embed/avatars/0.png",
     bot: member.user.bot,
     active: true,
     authLevel: AuthLevel.KARHU,
