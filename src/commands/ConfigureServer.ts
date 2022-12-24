@@ -9,7 +9,7 @@ import {
 } from "discord.js";
 import { Print } from "../utils/Print";
 import { Command } from "../interfaces/Command";
-import { putConfiguration, putGuild, putUsers } from "../Database/Mongoose";
+import { putConfiguration, putGuild } from "../Database/Mongoose";
 
 export const Configure: Command = {
   name: "configure",
@@ -53,7 +53,6 @@ export const Configure: Command = {
         boolean as boolean
       );
 
-      await putUsers(guild);
       await putGuild(guild);
     }
     const content =

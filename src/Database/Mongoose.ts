@@ -1,7 +1,6 @@
 import { Guild, GuildMember, PartialGuildMember, User } from "discord.js";
 import configmodel from "./schemas/serverconfig";
 import offencesmodel from "./schemas/offencesmodel";
-import usersmodel from "./schemas/usersmodel";
 import guildModel from "./schemas/guilds";
 import {
   IOffences,
@@ -63,16 +62,6 @@ export const putConfiguration = async function (
     putOptions
   );
   model?.save();
-};
-
-export const putUsers = async function (guild: Guild | null) {
-  if (!guild) return;
-
-  const users = await guild.members.fetch();
-
-  users.forEach((member) => {
-    createNewUser(member.user);
-  });
 };
 
 // Inserts new guild to database if it doesn't exist
@@ -416,15 +405,6 @@ const createNewOffenceUser = async function (
   model?.save();
 };
 
-const createNewUser = async function (user: User) {
-  const model = await usersmodel.findOneAndUpdate(
-    { userId: user.id },
-    { username: user.username },
-    putOptions
-  );
-  model?.save();
-};
-
 export const putOffence = async function (
   guild: Guild,
   user: User,
@@ -435,8 +415,6 @@ export const putOffence = async function (
     guildId: guild.id,
     userId: user.id,
   });
-
-  createNewUser(user);
 
   if (offender && offender.yearlyOffences.length > 0) {
     updateExistingOffences(guild, user, off, karmagained, offender);
