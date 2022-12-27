@@ -8,6 +8,10 @@ const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(
   "http://localhost:5000"
 );
 
+socket.on("connect", () => {
+  socket.emit("torstai", "Torstai connected");
+});
+
 export const Print = (s: string) => {
   const date: Date = new Date();
 
