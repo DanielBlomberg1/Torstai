@@ -5,7 +5,7 @@ import {
 } from "src/types/socketio.types";
 
 const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(
-  "http://192.168.1.10:5000"
+  "http://localhost:5000"
 );
 
 export const Print = (s: string) => {
