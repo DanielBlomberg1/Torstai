@@ -25,7 +25,7 @@ import {
 } from "./schemas/questmodel.types";
 import { Print } from "../utils/Print";
 
-const putOptions = { upsert: true, new: true, setDefaultsOnInsert: true };
+export const putOptions = { upsert: true, new: true, setDefaultsOnInsert: true };
 
 export const fetchPrefix = async function (id: string) {
   const config = await configmodel.findOne({ guildId: id });

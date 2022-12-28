@@ -85,3 +85,22 @@ export const generateWeeklyQuest = (): Quest => {
     const randomIndex = Math.floor(Math.random() * weeklyQuests.length);
     return weeklyQuests[randomIndex];
 }
+
+
+export const getQuestRewardBasedOnRarity = (questRarity: QuestRarity, questType: QuestType): number => {
+    let x = questType === QuestType.DAILY ? 1 : 2;
+    switch (questRarity) {
+        case QuestRarity.COMMON:
+            return 200 * x;
+        case QuestRarity.UNCOMMON:
+            return 300 * x;
+        case QuestRarity.RARE:
+            return 500 * x;
+        case QuestRarity.EPIC:
+            return 1000 * x;
+        case QuestRarity.LEGENDARY:
+            return 2000 * x;
+        default:
+            return 0;
+    }
+}

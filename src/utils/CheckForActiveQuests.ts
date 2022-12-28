@@ -2,7 +2,7 @@ import { Guild, User } from "discord.js";
 import {
   completeQuest,
   getActiveQuestsForUser,
-  getServerAdminName,
+  getServerAdminName
 } from "../Database/Mongoose";
 
 export const CheckForActiveQuests = async (
@@ -31,7 +31,6 @@ export const CheckForActiveQuests = async (
           }
         }
         break;
-
       case "Say hi to server admin":
         if (msg.toLowerCase().includes("hail")) {
           if (msg.toLowerCase().includes(await getServerAdminName(guild))) {
