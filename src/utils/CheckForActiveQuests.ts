@@ -11,7 +11,7 @@ export const CheckForActiveQuests = async (
   guild: Guild
 ): Promise<void> => {
   const quests = await getActiveQuestsForUser(user, guild);
-  /*
+
   for (const quest of quests) {
     switch (quest.questName) {
       case "The Lost Chad":
@@ -44,5 +44,5 @@ export const CheckForActiveQuests = async (
         break;
     }
   }
-  */
+  
 };

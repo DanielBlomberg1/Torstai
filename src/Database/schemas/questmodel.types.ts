@@ -1,40 +1,39 @@
 import mongoose, { Model } from "mongoose";
 
 export interface IQuestData {
-    guildId: string;
-    userId: string;
-    quests: Quest[];
+  guildId: string;
+  userId: string;
+  quests: Quest[];
 }
 
 export interface Quest {
-    questId: mongoose.Types.ObjectId;
-    questName: string;
-    description: string;
-    questRarity: QuestRarity;
-    questType: QuestType;
-    generatedOn: Date;
-    completedOn?: Date;
-    questStatus: QuestStatus;
+  questId: mongoose.Types.ObjectId;
+  questName: string;
+  description: string;
+  questRarity: QuestRarity;
+  questType: QuestType;
+  generatedOn: Date;
+  completedOn?: Date;
+  questStatus: QuestStatus;
 }
 
 export enum QuestStatus {
-    ACTIVE,
-    COMPLETED,
-    FAILED
+  ACTIVE = "ACTIVE",
+  COMPLETED = "COMPLETED",
+  FAILED = "FAILED",
 }
 
-
-export enum QuestType{
-    DAILY,
-    WEEKLY
+export enum QuestType {
+  DAILY = "DAILY",
+  WEEKLY = "WEEKLY",
 }
 
-export enum QuestRarity{
-    COMMON,
-    UNCOMMON,
-    RARE,
-    EPIC,
-    LEGENDARY
+export enum QuestRarity {
+  COMMON = "COMMON",
+  UNCOMMON = "UNCOMMON",
+  RARE = "RARE",
+  EPIC = "EPIC",
+  LEGENDARY = "LEGENDARY",
 }
 
 export interface IQuestDocument extends IQuestData, Document {}

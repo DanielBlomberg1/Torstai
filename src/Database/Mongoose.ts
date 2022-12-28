@@ -18,13 +18,12 @@ import {
 } from "./schemas/guilds.types";
 import questmodel from "./schemas/quest";
 import {
-  IQuestData,
   IQuestDocument,
   Quest,
-  QuestRarity,
   QuestStatus,
   QuestType,
 } from "./schemas/questmodel.types";
+import { Print } from "../utils/Print";
 
 const putOptions = { upsert: true, new: true, setDefaultsOnInsert: true };
 
@@ -540,40 +539,113 @@ export const getQuestsForUser = async function (user: User, guild: Guild) {
   const activeQuests = quests.filter(
     (q) => q.questStatus === QuestStatus.ACTIVE
   );
-  const dailyQuest = activeQuests.filter((q) => q.questType == 0);
-  const weeklyQuest = activeQuests.filter((q) => q.questType == 1);
+  const dailyQuest = activeQuests.filter((q) => q.questType == QuestType.DAILY);
+  const weeklyQuest = activeQuests.filter((q) => q.questType == QuestType.WEEKLY);
 
   const newQuests: Quest[] = [];
 
   if (activeQuests.length == 0) {
     // no active quests, generate one
+    Print("generating new Daily and Weekly quests for user: " + user.username);
     const quest = generateDailyQuest();
     const quest2 = generateWeeklyQuest();
     newQuests.push(quest);
     newQuests.push(quest2);
+
+    Print("user: " + user.username + "now has a new quest " + quest.questName);
+    Print("user: " + user.username + "now has a new quest " + quest2.questName);
   } else {
     // check if active quests are completed
     if (dailyQuest.length > 0) {
       dailyQuest.forEach((q) => {
-        console.log(q.generatedOn.getDate(), yesterday.getDate());
-        console.log(q.generatedOn.getDate() < yesterday.getDate());
         if (q.generatedOn.getDate() < yesterday.getDate()) {
+          Print(
+            "user: " +
+              user.username +
+              "failed daily quest, generating new one..."
+          );
+
           q.questStatus = QuestStatus.FAILED;
           // daily quest was generated yesterday, generate a new one
           const quest = generateDailyQuest();
+
+          Print(
+            "user: " + user.username + "now has a new quest " + quest.questName
+          );
+
           newQuests.push(quest);
         }
       });
+    } else {
+      const dailyQuests = quests.filter(
+        (q) => q.questType === QuestType.DAILY && q.questStatus === QuestStatus.COMPLETED
+      );
+      let userHasDoneDailyQuestToday = false;
+
+      dailyQuests.forEach((quest: Quest) => {
+        if (quest.generatedOn.getDate() === today.getDate()) {
+          userHasDoneDailyQuestToday = true;
+        }
+      });
+      if (!userHasDoneDailyQuestToday) {
+        Print(
+          "user: " +
+            user.username +
+            "completed daily quest, generating new one..."
+        );
+
+        const quest = generateDailyQuest();
+
+        Print(
+          "user: " + user.username + "now has a new quest " + quest.questName
+        );
+
+        newQuests.push(quest);
+      }
     }
     if (weeklyQuest.length > 0) {
       weeklyQuest.forEach((q) => {
         if (q.generatedOn.getDate() < weekAgo.getDate()) {
+          Print(
+            "user: " +
+              user.username +
+              "failed weekly quest, generating new one..."
+          );
           q.questStatus = QuestStatus.FAILED;
           // weekly quest was generated weekago, generate a new one
           const quest = generateWeeklyQuest();
+          Print(
+            "user: " + user.username + "now has a new quest " + quest.questName
+          );
           newQuests.push(quest);
         }
       });
+    } else {
+      const weeklyQuests = quests.filter(
+        (q) => q.questType === QuestType.WEEKLY && q.questStatus === QuestStatus.COMPLETED
+      );
+      let userHasDoneQuestThisWeek = false;
+
+      weeklyQuests.forEach((quest: Quest) => {
+        if (quest.generatedOn.getDate() === today.getDate()) {
+          userHasDoneQuestThisWeek = true;
+        }
+      });
+      if (!userHasDoneQuestThisWeek) {
+        Print(
+          "user: " +
+            user.username +
+            "completed weekly quest, generating new one..."
+        );
+
+        const quest = generateWeeklyQuest();
+
+        Print(
+          "user: " + user.username + "now has a new quest " + quest.questName
+        );
+
+        newQuests.push(quest);
+      }
     }
   }
 
@@ -581,15 +653,17 @@ export const getQuestsForUser = async function (user: User, guild: Guild) {
     quests: [...quests, ...newQuests],
   };
 
-  console.log(update.quests);
+  if (update.quests.length > quests.length) {
+    console.log(update.quests);
 
-  const model = await questmodel.findOneAndUpdate(
-    { guildId: guild.id, userId: user.id },
-    update,
-    putOptions
-  );
+    const model = await questmodel.findOneAndUpdate(
+      { guildId: guild.id, userId: user.id },
+      update,
+      putOptions
+    );
 
-  model?.save();
+    model?.save();
+  }
 
   return update.quests;
 };
@@ -602,6 +676,25 @@ export const getActiveQuestsForUser = async function (
   return quests.filter((q) => q.questStatus === QuestStatus.ACTIVE);
 };
 
+export const getWeeklyAndDailyQuestsForUser = async function (
+  user: User,
+  guild: Guild
+) {
+  const today = new Date();
+  const weekago = new Date();
+
+  weekago.setDate(weekago.getDate() - 7);
+
+  const quests = await getQuestsForUser(user, guild);
+  return quests.filter(
+    (q) =>
+      (q.questType === QuestType.DAILY &&
+        today.getDate() === q.generatedOn.getDate()) ||
+      (q.questType === QuestType.WEEKLY &&
+        weekago.getDate() < q.generatedOn.getDate())
+  );
+};
+
 export const getServerAdminName = async function (guild: Guild) {
   return (await guild.fetchOwner()).user.username;
 };
@@ -611,24 +704,17 @@ export const completeQuest = async function (
   guild: Guild,
   quest: Quest
 ) {
-  const usersquests: IQuestDocument[] = await questmodel.find({
-    userId: user.id,
+  const query = {
     guildId: guild.id,
+    userId: user.id,
+    "quests.questId": quest.questId,
+  };
+
+  await questmodel.updateOne(query, {
+    $set: {
+      "quests.$.questStatus": QuestStatus.COMPLETED,
+    },
   });
 
-  const quests = usersquests[0]?.quests || [];
-
-  const questToComplete = quests.filter((q) => q.questId == quest.questId)[0];
-
-  if (questToComplete) {
-    questToComplete.questStatus = QuestStatus.COMPLETED;
-  }
-
-  const update = {
-    quests: [...quests],
-  };
-  console.log(update.quests);
-
-  // const model = await questmodel.findOneAndUpdate({userId: user.id, guildId: guild.id},update, putOptions);
-  // model?.save();
+  getQuestsForUser(user, guild);
 };
