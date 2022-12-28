@@ -17,7 +17,7 @@ import {
   MemberData as MemberData,
 } from "./schemas/guilds.types";
 import questmodel from "./schemas/quest";
-import { IQuestData, IQuestDocument, Quest, QuestRarity, questType } from "./schemas/questmodel.types";
+import { IQuestData, IQuestDocument, Quest, QuestRarity, QuestStatus, QuestType } from "./schemas/questmodel.types";
 
 const putOptions = { upsert: true, new: true, setDefaultsOnInsert: true };
 
@@ -519,44 +519,65 @@ export const getQuestsForUser = async function (user: User, guild: Guild) {
   // if users active quest is completed add good deed
   // if users quest is a daily one and it was generated yesterday, generate a new one
   // if users quest is a weekly one and it was generated last week, generate a new one
-  // if users quest is a monthly one and it was generated last month, generate a new one
 
-  if(!(usersquests instanceof questmodel)){return;}
-
-  const quests = usersquests[0].quests;
+  const quests = usersquests[0]?.quests || [];
 
   const now = new Date();
   const today = now.getDate();
-  const thisWeek = getCurrentWeek();
-  const thisMonth = now.getMonth();
 
-  const activeQuest = quests.filter((q) => q.completed == false);
-  const dailyQuest = activeQuest.filter((q) => q.questType == 0);
-  const weeklyQuest = activeQuest.filter((q) => q.questType == 1);
+  const activeQuests = quests.filter((q) => q.questStatus === QuestStatus.ACTIVE);
+  const dailyQuest = activeQuests.filter((q) => q.questType == 0);
+  const weeklyQuest = activeQuests.filter((q) => q.questType == 1);
 
-  if (activeQuest.length == 0) {
+  const newQuests: Quest[] = [];
+
+  if (activeQuests.length == 0) {
     // no active quests, generate one
     const quest = generateDailyQuest();
     const quest2 = generateWeeklyQuest();
-    quests.push(quest);
-    quests.push(quest2);
+    newQuests.push(quest);
+    newQuests.push(quest2);
   } else {
     // check if active quests are completed
     if (dailyQuest.length > 0) {
-      if (dailyQuest[0].generatedOn.getDate() < now.setDate(today - 1)) {
-        // daily quest was generated yesterday, generate a new one
-        const quest = generateDailyQuest();
-        quests.push(quest);
-      }
+      dailyQuest.forEach((q) => {
+        if (q.generatedOn.getDate() < now.setDate(today - 1)) {
+          q.questStatus = QuestStatus.FAILED;
+          // daily quest was generated yesterday, generate a new one
+          const quest = generateDailyQuest();
+          newQuests.push(quest);
+        }
+      });
     }
     if (weeklyQuest.length > 0) {
-      if (weeklyQuest[0].generatedOn.getDate() < now.setDate(today - 7)) {
-        // daily quest was generated yesterday, generate a new one
-        const quest = generateWeeklyQuest();
-        quests.push(quest);
-      }
+      weeklyQuest.forEach((q) => {
+        if (q.generatedOn.getDate() < now.setDate(today - 7)) {
+          q.questStatus = QuestStatus.FAILED;
+          // daily quest was generated yesterday, generate a new one
+          const quest = generateWeeklyQuest();
+          newQuests.push(quest);
+        }
+      });
     }
   }
+
+
+  const update = {
+    quests: [
+      ...quests, ...newQuests
+    ],
+  };
+
+  
+  console.log(update);
+
+  const model = await questmodel.findOneAndUpdate(
+    { guildId: guild.id, userId: user.id },
+    update,
+    putOptions
+  );
+
+  model?.save();
 
   return quests;
 }

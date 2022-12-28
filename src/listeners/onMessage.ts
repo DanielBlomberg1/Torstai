@@ -2,6 +2,7 @@ import { Client, Message } from "discord.js";
 import CheckForGoodWords from "../utils/CheckForGoodWords";
 import { OffenceEnum } from "../Database/schemas/offencesmodel.types";
 import CheckForBadWords from "../utils/CheckForBadWords";
+import { getQuestsForUser } from "../Database/Mongoose";
 
 // this is not working for whatever reason
 export default (client: Client): void => {
@@ -15,6 +16,8 @@ export default (client: Client): void => {
       );
 
       CheckForGoodWords(msg.content, msg.author, msg.guild);
+      getQuestsForUser(msg.author, msg.guild);
+      console.log(msg.content);
     }
   });
 };

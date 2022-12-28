@@ -1,59 +1,74 @@
-import { Quest, QuestRarity, questType } from "src/Database/schemas/questmodel.types";
+import { Quest, QuestRarity, QuestStatus, QuestType } from "../Database/schemas/questmodel.types";
 
 const generateRarity = (): QuestRarity => {
     const rarity = Math.floor(Math.random() * 100);
     if (rarity < 50) {
-        return QuestRarity.Common;
+        return QuestRarity.COMMON;
     } else if (rarity < 75) {
-        return QuestRarity.Uncommon;
+        return QuestRarity.UNCOMMON;
     } else if (rarity < 90) {
-        return QuestRarity.Rare;
+        return QuestRarity.RARE;
     } else if (rarity < 98) {
-        return QuestRarity.Epic;
+        return QuestRarity.EPIC;
     } else {
-        return QuestRarity.Legendary;
+        return QuestRarity.LEGENDARY;
     }   
 }
 
 
 export const allQuests: Quest[] = [
     {
-        name: "The lost Chad",
+        questName: "The Lost Chad",
         questRarity: generateRarity(),
-        questType: questType.Daily,    
+        questType: QuestType.DAILY,    
         description: "A Chad has gone missing in the server. Find the chad.",
         generatedOn: new Date(),
-        completed: false,
+        questStatus: QuestStatus.ACTIVE,
     } as Quest,
     {
-        name: "Give 'em the love",
+        questName: "Give 'em the love",
         questRarity: generateRarity(),
-        questType: questType.Daily,
+        questType: QuestType.DAILY,
         description: "Server has been lacking love. Give the server some love.",
         generatedOn: new Date(),
-        completed: false,
+        questStatus: QuestStatus.ACTIVE,
     } as Quest,
     {
-        name: "",
+        questName: "Jörmy is hungry",
         questRarity: generateRarity(),
-        questType: questType.Daily,
-        description: "",
+        questType: QuestType.DAILY,
+        description: "Feed jörmy, he likes a certain food.",
         generatedOn: new Date(),
-        completed: false,
+        questStatus: QuestStatus.ACTIVE,
     } as Quest,
     {
-        name: "",
+        questName: "I am a memeeemer :D",
         questRarity: generateRarity(),
-        questType: questType.Daily,
-        description: "",
+        questType: QuestType.DAILY,
+        description: "The servers meme quota is low. Make a meme. FAAAST! also, make it good enough to get upvoted.",
         generatedOn: new Date(),
-        completed: false,
+        questStatus: QuestStatus.ACTIVE,
     } as Quest,
-
+    {
+        questName: "Say hi to server admin",
+        questRarity: generateRarity(),
+        questType: QuestType.DAILY,
+        description: "Server admin is lonely. Say hi to him. in German if you can.",
+        generatedOn: new Date(),
+        questStatus: QuestStatus.ACTIVE,
+    } as Quest,
+    {
+        questName: "This is impossible to do :D",
+        questRarity: generateRarity(),
+        questType: QuestType.WEEKLY,
+        description: "LOL XD",
+        generatedOn: new Date(),
+        questStatus: QuestStatus.ACTIVE,
+    } as Quest,
 ]
 
-const dailyQuests: Quest[] = allQuests.filter(quest => quest.questType === questType.Daily);
-const weeklyQuests: Quest[] = allQuests.filter(quest => quest.questType === questType.Weekly);
+const dailyQuests: Quest[] = allQuests.filter(quest => quest.questType === QuestType.DAILY);
+const weeklyQuests: Quest[] = allQuests.filter(quest => quest.questType === QuestType.WEEKLY);
 
 export const generateDailyQuest = (): Quest => {
     const randomIndex = Math.floor(Math.random() * dailyQuests.length);

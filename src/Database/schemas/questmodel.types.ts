@@ -7,27 +7,33 @@ export interface IQuestData {
 }
 
 export interface Quest {
-    name: string;
+    questName: string;
     description: string;
     questRarity: QuestRarity;
-    questType: questType;
+    questType: QuestType;
     generatedOn: Date;
     completedOn?: Date;
-    completed: boolean;
+    questStatus: QuestStatus;
+}
+
+export enum QuestStatus {
+    ACTIVE,
+    COMPLETED,
+    FAILED
 }
 
 
-export enum questType{
-    Daily,
-    Weekly
+export enum QuestType{
+    DAILY,
+    WEEKLY
 }
 
 export enum QuestRarity{
-    Common,
-    Uncommon,
-    Rare,
-    Epic,
-    Legendary
+    COMMON,
+    UNCOMMON,
+    RARE,
+    EPIC,
+    LEGENDARY
 }
 
 export interface IQuestDocument extends IQuestData, Document {}
