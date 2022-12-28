@@ -1,4 +1,4 @@
-import { generateDailyQuest, generateWeeklyQuest } from "./../utils/questlists";
+import { generateDailyQuest, generateWeeklyQuest, getQuestRewardBasedOnRarity } from "./../utils/questlists";
 import { Guild, GuildMember, PartialGuildMember, User } from "discord.js";
 import configmodel from "./schemas/serverconfig";
 import offencesmodel from "./schemas/offencesmodel";
@@ -8,6 +8,7 @@ import {
   OffenceType,
   YearlyOffences,
   WeeklyOffences,
+  OffenceEnum,
 } from "./schemas/offencesmodel.types";
 
 import { getCurrentWeek, getCurrentYear } from "../utils/dateUtils";
@@ -715,6 +716,16 @@ export const completeQuest = async function (
       "quests.$.questStatus": QuestStatus.COMPLETED,
     },
   });
+
+  const offence: OffenceType = {
+    offenceType: OffenceEnum.quest,
+    offenceDescription: quest.questName + " " + quest.questRarity + " completed",
+    commitedOn: new Date(),
+    karmaChange: 1500,
+    newKarma: 0,
+  };
+
+  await putOffence(guild, user, offence, getQuestRewardBasedOnRarity(quest.questRarity, quest.questType));
 
   getQuestsForUser(user, guild);
 };

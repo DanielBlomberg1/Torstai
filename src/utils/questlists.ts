@@ -88,18 +88,18 @@ export const generateWeeklyQuest = (): Quest => {
 
 
 export const getQuestRewardBasedOnRarity = (questRarity: QuestRarity, questType: QuestType): number => {
-    let x = questType === QuestType.DAILY ? 1 : 2;
+    let x = questType === QuestType.DAILY ? 0 : 3;
     switch (questRarity) {
         case QuestRarity.COMMON:
-            return 200 * x;
+            return 100 + x * 100;
         case QuestRarity.UNCOMMON:
-            return 300 * x;
+            return 250 + x * 250;
         case QuestRarity.RARE:
-            return 500 * x;
+            return 500 + x * 500;
         case QuestRarity.EPIC:
-            return 1000 * x;
+            return 750 + x * 750;
         case QuestRarity.LEGENDARY:
-            return 2000 * x;
+            return 1000 + x * 1000 ;
         default:
             return 0;
     }
