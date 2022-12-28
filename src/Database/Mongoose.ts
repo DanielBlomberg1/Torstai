@@ -561,15 +561,13 @@ export const getQuestsForUser = async function (user: User, guild: Guild) {
     }
   }
 
-
   const update = {
     quests: [
       ...quests, ...newQuests
     ],
   };
 
-  
-  console.log(update);
+  console.log(update.quests);
 
   const model = await questmodel.findOneAndUpdate(
     { guildId: guild.id, userId: user.id },
@@ -579,7 +577,34 @@ export const getQuestsForUser = async function (user: User, guild: Guild) {
 
   model?.save();
 
-  return quests;
+  return update.quests;
 }
 
+export const getActiveQuestsForUser = async function (user: User, guild: Guild) {
+  const quests = await getQuestsForUser(user, guild);
+  return quests.filter((q) => q.questStatus === QuestStatus.ACTIVE);
+};
 
+
+export const completeQuest = async function (user: User, guild: Guild, quest: Quest) {
+  
+    const usersquests: IQuestDocument[] = await questmodel.find({ userId: user.id, guildId: guild.id });
+  
+    const quests = usersquests[0]?.quests || [];
+  
+    const questToComplete = quests.filter((q) => q.questId == quest.questId)[0];
+  
+    if (questToComplete) {
+      questToComplete.questStatus = QuestStatus.COMPLETED;
+    }
+    
+    const update = {
+      quests: [
+        ...quests
+      ],
+    };
+    console.log(update.quests);
+  
+    // const model = await questmodel.findOneAndUpdate({userId: user.id, guildId: guild.id},update, putOptions);
+    // model?.save();
+  }

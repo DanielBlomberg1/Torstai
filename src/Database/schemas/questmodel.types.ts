@@ -1,4 +1,4 @@
-import { Model } from "mongoose";
+import mongoose, { Model } from "mongoose";
 
 export interface IQuestData {
     guildId: string;
@@ -7,6 +7,7 @@ export interface IQuestData {
 }
 
 export interface Quest {
+    questId: mongoose.Types.ObjectId;
     questName: string;
     description: string;
     questRarity: QuestRarity;

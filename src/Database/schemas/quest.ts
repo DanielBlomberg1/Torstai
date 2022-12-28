@@ -1,11 +1,12 @@
 import { Schema, model } from "mongoose";
-import { IQuestData, QuestRarity, QuestStatus, QuestType } from "./questmodel.types";
+import { IQuestData } from "./questmodel.types";
 
 const questSchema = new Schema({
   guildId: String,
   userId: String,
   quests: [
     {
+      questId: Schema.Types.ObjectId,
       questName: String,
       description: String,
       questRarity: Number,

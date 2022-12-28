@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { Quest, QuestRarity, QuestStatus, QuestType } from "../Database/schemas/questmodel.types";
 
 const generateRarity = (): QuestRarity => {
@@ -18,6 +19,7 @@ const generateRarity = (): QuestRarity => {
 
 export const allQuests: Quest[] = [
     {
+        questId: new mongoose.Types.ObjectId(),
         questName: "The Lost Chad",
         questRarity: generateRarity(),
         questType: QuestType.DAILY,    
@@ -26,6 +28,7 @@ export const allQuests: Quest[] = [
         questStatus: QuestStatus.ACTIVE,
     } as Quest,
     {
+        questId: new mongoose.Types.ObjectId(),
         questName: "Give 'em the love",
         questRarity: generateRarity(),
         questType: QuestType.DAILY,
@@ -34,14 +37,16 @@ export const allQuests: Quest[] = [
         questStatus: QuestStatus.ACTIVE,
     } as Quest,
     {
+        questId: new mongoose.Types.ObjectId(),
         questName: "Jörmy is hungry",
         questRarity: generateRarity(),
         questType: QuestType.DAILY,
-        description: "Feed jörmy, he likes a certain food.",
+        description: "Feed jörmy a blindchannel burger. He is hungry.",
         generatedOn: new Date(),
         questStatus: QuestStatus.ACTIVE,
     } as Quest,
     {
+        questId: new mongoose.Types.ObjectId(),
         questName: "I am a memeeemer :D",
         questRarity: generateRarity(),
         questType: QuestType.DAILY,
@@ -50,6 +55,7 @@ export const allQuests: Quest[] = [
         questStatus: QuestStatus.ACTIVE,
     } as Quest,
     {
+        questId: new mongoose.Types.ObjectId(),
         questName: "Say hi to server admin",
         questRarity: generateRarity(),
         questType: QuestType.DAILY,
@@ -58,6 +64,7 @@ export const allQuests: Quest[] = [
         questStatus: QuestStatus.ACTIVE,
     } as Quest,
     {
+        questId: new mongoose.Types.ObjectId(),
         questName: "This is impossible to do :D",
         questRarity: generateRarity(),
         questType: QuestType.WEEKLY,
