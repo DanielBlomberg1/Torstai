@@ -91,9 +91,9 @@ export const putGuild = async function (guild: Guild | null) {
 
     await guildModel.insertMany(guildData);
 
-    console.log("Added new guild to database");
+    Print("Added new guild " + guild.name + " to database");
   } else {
-    console.log("Guild already exists in database");
+    Print("Tried adding guild " + guild.name + " to database, but it already exists");
   }
 };
 
@@ -105,7 +105,7 @@ export const addGuildMember = async function (member: GuildMember) {
     { $push: { users: memberData } }
   );
 
-  console.log("Added new guild member to database");
+  Print("Added new guild member "+ member.user.username + " to the database");
 };
 
 export const removeGuildMember = async function (
@@ -124,7 +124,7 @@ export const removeGuildMember = async function (
     },
   });
 
-  console.log("Deactivated guild member from database");
+  Print("Deactivated guild member: " + member.user.username + "  from database");
 };
 
 export const updateGuildMember = async function (member: GuildMember) {
@@ -151,11 +151,11 @@ export const updateGuildMember = async function (member: GuildMember) {
     },
   });
 
-  console.log("Updated user " + member.user.username);
+  Print("Updated user " + member.user.username);
 };
 
 export const updateGuildData = async function (guild: Guild) {
-  console.log("Updating guild " + guild.name);
+  Print("Updating guild " + guild.name);
 
   const update = {
     guildId: guild.id,
@@ -669,8 +669,6 @@ export const getQuestsForUser = async function (user: User, guild: Guild) {
   };
 
   if (update.quests.length > quests.length) {
-    console.log(update.quests);
-
     const model = await questmodel.findOneAndUpdate(
       { userId: user.id, guildId: guild.id },
       update,
@@ -719,7 +717,7 @@ export const completeQuest = async function (
   guild: Guild,
   quest: Quest
 ) {
-  console.log("trying to complete quest: " + quest.questName);
+  Print("USER: " + user.username + " completed quest: " + quest.questName);
   const query = {
     guildId: guild.id,
     userId: user.id,
@@ -756,7 +754,7 @@ export const partialCompleteQuest = async function (
   guild: Guild,
   quest: Quest
 ) {
-  console.log("trying to partial complete quest");
+  Print("USER: " + user.username + " progressed on quest: " + quest.questName);
   const query = {
     guildId: guild.id,
     userId: user.id,
