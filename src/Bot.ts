@@ -14,7 +14,7 @@ import onGuildUpdate from "./listeners/onGuildUpdate";
 import { connect } from "mongoose";
 import { installIfNotInstalled } from "./utils/ytdlp";
 
-dotenv.config();
+dotenv.config({ path: __dirname + "/../.env" });
 
 const token = process.env.BOT_TOKEN;
 const dbToken = process.env.DB_TOKEN as string;
