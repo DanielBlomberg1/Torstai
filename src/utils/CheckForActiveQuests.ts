@@ -34,7 +34,9 @@ export const CheckForActiveQuests = async (
         break;
       case "Say hi to server admin":
         if (msg.toLowerCase().includes("hail")) {
-          const serverAdminName = (await getServerAdminName(guild)).toLowerCase();
+          const serverAdminName = (
+            await getServerAdminName(guild)
+          ).toLowerCase();
           if (msg.toLowerCase().includes(serverAdminName)) {
             completeQuest(user, guild, quest);
           }

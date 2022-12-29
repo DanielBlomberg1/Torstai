@@ -17,10 +17,11 @@ export const Quest: Command = {
       const quests = getWeeklyAndDailyQuestsForUser(user, interaction.guild);
 
       const dQ = (await quests).filter(
-        (quest: { questType: QuestType; }) => quest.questType === QuestType.DAILY
+        (quest: { questType: QuestType }) => quest.questType === QuestType.DAILY
       )[0];
       const wQ = (await quests).filter(
-        (quest: { questType: QuestType; }) => quest.questType === QuestType.WEEKLY
+        (quest: { questType: QuestType }) =>
+          quest.questType === QuestType.WEEKLY
       )[0];
 
       // generate completion string currnetCompletionSteps/completionSteps

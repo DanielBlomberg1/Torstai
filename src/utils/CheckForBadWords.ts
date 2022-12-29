@@ -2,7 +2,10 @@ import { putOffence } from "./../Database/Mongoose";
 import { Guild, User } from "discord.js";
 import { en } from "./en";
 import { fi } from "./fi";
-import { OffenceEnum, OffenceType } from "../Database/schemas/offencesmodel.types";
+import {
+  OffenceEnum,
+  OffenceType,
+} from "../Database/schemas/offencesmodel.types";
 import { Print } from "./Print";
 
 export default async (

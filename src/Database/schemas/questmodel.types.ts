@@ -14,11 +14,11 @@ export interface Quest {
   questType: QuestType;
   generatedOn: Date;
   questStatus: QuestStatus;
-  optionalAttributes?:{
-    target?: [String],
-    completionSteps?: Number,
-    currentCompletionSteps?: Number,
-  }
+  optionalAttributes?: {
+    target?: [String];
+    completionSteps?: Number;
+    currentCompletionSteps?: Number;
+  };
 }
 
 export enum QuestStatus {

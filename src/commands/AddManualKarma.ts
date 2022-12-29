@@ -1,4 +1,7 @@
-import { OffenceEnum, OffenceType } from '../Database/schemas/offencesmodel.types';
+import {
+  OffenceEnum,
+  OffenceType,
+} from "../Database/schemas/offencesmodel.types";
 import { putOffence } from "./../Database/Mongoose";
 import {
   CommandInteraction,
@@ -32,7 +35,8 @@ export const AddmanualKarma: Command = {
   run: async (client: Client, interaction: CommandInteraction) => {
     let content = "failed";
     const user = interaction.options.get("user")?.user as User;
-    const karmaAmount = interaction.options.get("karma-amount")?.value as number;
+    const karmaAmount = interaction.options.get("karma-amount")
+      ?.value as number;
 
     if (interaction.guild && karmaAmount && user) {
       const date = new Date();
@@ -45,15 +49,13 @@ export const AddmanualKarma: Command = {
         offenceDescription: date.toUTCString() + " " + "added karma by admin",
       };
 
-
-      putOffence(interaction.guild, user, offence , karmaAmount);
+      putOffence(interaction.guild, user, offence, karmaAmount);
       content = "added karma to " + user.username + " by " + karmaAmount;
     }
 
     await interaction.followUp({
       ephemeral: true,
       content,
-      });
-
-    }   
+    });
+  },
 };

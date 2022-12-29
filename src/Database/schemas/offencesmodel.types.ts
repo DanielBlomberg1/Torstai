@@ -30,7 +30,7 @@ export enum OffenceEnum {
   oral,
   written,
   other,
-  quest
+  quest,
 }
 
 export interface IOFfencesDocument extends IOffences, Document {}

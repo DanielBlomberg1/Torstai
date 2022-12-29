@@ -93,7 +93,9 @@ export const putGuild = async function (guild: Guild | null) {
 
     Print("Added new guild " + guild.name + " to database");
   } else {
-    Print("Tried adding guild " + guild.name + " to database, but it already exists");
+    Print(
+      "Tried adding guild " + guild.name + " to database, but it already exists"
+    );
   }
 };
 
@@ -105,7 +107,7 @@ export const addGuildMember = async function (member: GuildMember) {
     { $push: { users: memberData } }
   );
 
-  Print("Added new guild member "+ member.user.username + " to the database");
+  Print("Added new guild member " + member.user.username + " to the database");
 };
 
 export const removeGuildMember = async function (
@@ -124,7 +126,9 @@ export const removeGuildMember = async function (
     },
   });
 
-  Print("Deactivated guild member: " + member.user.username + "  from database");
+  Print(
+    "Deactivated guild member: " + member.user.username + "  from database"
+  );
 };
 
 export const updateGuildMember = async function (member: GuildMember) {
@@ -525,24 +529,25 @@ export const fetchGoodDeeds = async function () {
   return offs;
 };
 
-const CheckIfQuestOfThisTypeWasCompletedAlready= async function(quests: Quest[], questType: QuestType){
+const CheckIfQuestOfThisTypeWasCompletedAlready = async function (
+  quests: Quest[],
+  questType: QuestType
+) {
   const time = new Date();
-  time.setDate(0 - (questType === QuestType.WEEKLY ? 7 : 1 ))
+  time.setDate(0 - (questType === QuestType.WEEKLY ? 7 : 1));
 
   const ActiveCompletedQuests = quests.filter(
-    (q) =>
-      q.questType ===  questType &&
-      q.questStatus === QuestStatus.COMPLETED
+    (q) => q.questType === questType && q.questStatus === QuestStatus.COMPLETED
   );
   let userHasDoneQuestThisWeek = false;
-  
+
   ActiveCompletedQuests.forEach((quest: Quest) => {
     if (quest.generatedOn.getDate() === time.getDate()) {
       userHasDoneQuestThisWeek = true;
     }
   });
   return userHasDoneQuestThisWeek;
-}
+};
 
 export const getQuestsForUser = async function (user: User, guild: Guild) {
   const usersquests: IQuestDocument[] = await questmodel.find({
@@ -577,15 +582,19 @@ export const getQuestsForUser = async function (user: User, guild: Guild) {
   if (activeQuests.length == 0) {
     // no active quests, generate one
 
-    if(!CheckIfQuestOfThisTypeWasCompletedAlready(quests, QuestType.DAILY)){
+    if (!CheckIfQuestOfThisTypeWasCompletedAlready(quests, QuestType.DAILY)) {
       const quest = generateDailyQuest();
       newQuests.push(quest);
-      Print("user: " + user.username + " now has a new quest " + quest.questName);
+      Print(
+        "user: " + user.username + " now has a new quest " + quest.questName
+      );
     }
-    if(!CheckIfQuestOfThisTypeWasCompletedAlready(quests, QuestType.WEEKLY)){
+    if (!CheckIfQuestOfThisTypeWasCompletedAlready(quests, QuestType.WEEKLY)) {
       const quest = generateWeeklyQuest();
       newQuests.push(quest);
-      Print("user: " + user.username + " now has a new quest " + quest.questName);
+      Print(
+        "user: " + user.username + " now has a new quest " + quest.questName
+      );
     }
   } else {
     // check if active quests are completed
@@ -610,7 +619,11 @@ export const getQuestsForUser = async function (user: User, guild: Guild) {
         }
       });
     } else {
-      const userHasDoneDailyQuestToday = await CheckIfQuestOfThisTypeWasCompletedAlready(quests, QuestType.DAILY);
+      const userHasDoneDailyQuestToday =
+        await CheckIfQuestOfThisTypeWasCompletedAlready(
+          quests,
+          QuestType.DAILY
+        );
       if (!userHasDoneDailyQuestToday) {
         Print(
           "user: " +
@@ -645,7 +658,8 @@ export const getQuestsForUser = async function (user: User, guild: Guild) {
         }
       });
     } else {
-      const userHasDoneQuestThisWeek = CheckIfQuestOfThisTypeWasCompletedAlready(quests, QuestType.WEEKLY);
+      const userHasDoneQuestThisWeek =
+        CheckIfQuestOfThisTypeWasCompletedAlready(quests, QuestType.WEEKLY);
       if (!userHasDoneQuestThisWeek) {
         Print(
           "user: " +
