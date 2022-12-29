@@ -21,6 +21,7 @@ const generateRarity = (): QuestRarity => {
   }
 };
 
+// write new quests here implement elsewhere
 export const allQuests: Quest[] = [
   {
     questId: new mongoose.Types.ObjectId(),
