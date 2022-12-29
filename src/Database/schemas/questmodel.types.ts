@@ -13,8 +13,12 @@ export interface Quest {
   questRarity: QuestRarity;
   questType: QuestType;
   generatedOn: Date;
-  completedOn?: Date;
   questStatus: QuestStatus;
+  optionalAttributes?:{
+    target?: [String],
+    completionSteps?: Number,
+    currentCompletionSteps?: Number,
+  }
 }
 
 export enum QuestStatus {

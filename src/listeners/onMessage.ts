@@ -17,10 +17,12 @@ export default (client: Client): void => {
       );
 
       CheckForGoodWords(msg.content, msg.author, msg.guild);
-      CheckForActiveQuests(msg.content, msg.author, msg.guild);
 
-      Print(msg.author.username +  ": " + msg.content);
+      if(!msg.author.bot){
+        CheckForActiveQuests(msg.content, msg.author, msg.guild);
+      }
 
+      if(msg.content.length > 0){Print(msg.author.username +  ": " + msg.content);}
     }
   });
 };

@@ -2,7 +2,8 @@ import { Guild, User } from "discord.js";
 import {
   completeQuest,
   getActiveQuestsForUser,
-  getServerAdminName
+  getServerAdminName,
+  partialCompleteQuest,
 } from "../Database/Mongoose";
 
 export const CheckForActiveQuests = async (
@@ -20,7 +21,7 @@ export const CheckForActiveQuests = async (
         }
         break;
       case "Give 'em the love":
-        if (msg.toLowerCase().includes(":heart:")) {
+        if (msg.toLowerCase().includes("❤️")) {
           completeQuest(user, guild, quest);
         }
         break;
@@ -33,15 +34,34 @@ export const CheckForActiveQuests = async (
         break;
       case "Say hi to server admin":
         if (msg.toLowerCase().includes("hail")) {
-          if (msg.toLowerCase().includes(await getServerAdminName(guild))) {
+          const serverAdminName = (await getServerAdminName(guild)).toLowerCase();
+          if (msg.toLowerCase().includes(serverAdminName)) {
             completeQuest(user, guild, quest);
           }
         }
 
         break;
+      case "It's Elementary":
+        if (msg.toLowerCase().includes("9")) {
+          completeQuest(user, guild, quest);
+        }
+        break;
+      case "Impossible Quest":
+        if (msg.toLowerCase().includes("JESSS HYVÄ FIILIS! PERJANTAII")) {
+          completeQuest(user, guild, quest);
+        }
+        break;
+      case "Intergral Solutions":
+        if (msg.toLowerCase().includes("1/2*sqrt(pi/2)")) {
+          completeQuest(user, guild, quest);
+        }
+        break;
+      case "Firecapped":
+        if (msg.toLowerCase().includes("missä firecape?")) {
+          partialCompleteQuest(user, guild, quest);
+        }
       default:
         break;
     }
   }
-  
 };

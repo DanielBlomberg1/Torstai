@@ -1,10 +1,5 @@
 import { getQuestRewardBasedOnRarity } from "./../utils/questlists";
-import {
-  CommandInteraction,
-  Client,
-  ApplicationCommandType,
-  User,
-} from "discord.js";
+import { CommandInteraction, Client, ApplicationCommandType } from "discord.js";
 import { QuestStatus, QuestType } from "../Database/schemas/questmodel.types";
 import { getWeeklyAndDailyQuestsForUser } from "../Database/Mongoose";
 import { Command } from "../interfaces/Command";
@@ -21,44 +16,52 @@ export const Quest: Command = {
     if (interaction.guild) {
       const quests = getWeeklyAndDailyQuestsForUser(user, interaction.guild);
 
-      const dailyQuest = (await quests).filter(
-        (quest) => quest.questType === QuestType.DAILY
+      const dQ = (await quests).filter(
+        (quest: { questType: QuestType; }) => quest.questType === QuestType.DAILY
       )[0];
-      const weeklyQuest = (await quests).filter(
-        (quest) => quest.questType === QuestType.WEEKLY
+      const wQ = (await quests).filter(
+        (quest: { questType: QuestType; }) => quest.questType === QuestType.WEEKLY
       )[0];
 
+      // generate completion string currnetCompletionSteps/completionSteps
+      // if completionSteps is 0, then we don't want to show the completion string
+      let completionStringDaily = "0/0";
+      if (dQ.optionalAttributes?.completionSteps !== undefined) {
+        completionStringDaily =
+          dQ.optionalAttributes.currentCompletionSteps +
+          "/" +
+          dQ.optionalAttributes.completionSteps;
+      }
+
+      let completionStringWeekly = "0/0";
+      if (wQ.optionalAttributes?.completionSteps !== undefined) {
+        completionStringWeekly =
+          wQ.optionalAttributes.currentCompletionSteps +
+          "/" +
+          wQ.optionalAttributes.completionSteps;
+      }
+
+      // printout for daily quest
       content = "Quests for " + user.username + ":```\n";
+      content += "Daily quest: " + dQ.questName + " ";
+      content += dQ.questStatus === QuestStatus.COMPLETED ? "✔️" : "❌";
+      content += completionStringDaily === "0/0" ? "" : completionStringDaily;
+      content += "\n \t quest description: " + dQ.description;
+      content += "\n \t quest rarity: " + dQ.questRarity;
       content +=
-        "Daily quest: " +
-        dailyQuest.questName +
-        " " +
-        (dailyQuest.questStatus === QuestStatus.COMPLETED ? "✔️" : "❌") +
-        "\n \t quest description: " +
-        dailyQuest.description +
-        "\n \t quest rarity: " +
-        dailyQuest.questRarity +
         "\n \t quest reward: " +
-        getQuestRewardBasedOnRarity(
-          dailyQuest.questRarity,
-          dailyQuest.questType
-        ) +
+        getQuestRewardBasedOnRarity(dQ.questRarity, dQ.questType) +
         " \n";
 
+      // same for weekly quest
+      content += "Weekly quest: " + wQ.questName + " ";
+      content += wQ.questStatus === QuestStatus.COMPLETED ? "✔️ " : "❌ ";
+      content += completionStringWeekly === "0/0" ? "" : completionStringWeekly;
+      content += "\n \t quest description: " + wQ.description;
+      content += "\n \t quest rarity: " + wQ.questRarity;
       content +=
-        "Weekly quest: " +
-        weeklyQuest.questName +
-        " " +
-        (weeklyQuest.questStatus === QuestStatus.COMPLETED ? "✔️" : "❌") +
-        "\n \t quest description: " +
-        weeklyQuest.description +
-        "\n \t quest rarity: " +
-        weeklyQuest.questRarity +
         "\n \t quest reward: " +
-        getQuestRewardBasedOnRarity(
-          weeklyQuest.questRarity,
-          weeklyQuest.questType
-        ) +
+        getQuestRewardBasedOnRarity(wQ.questRarity, wQ.questType) +
         " \n";
       content += "```";
     }

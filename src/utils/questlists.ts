@@ -47,10 +47,10 @@ export const allQuests: Quest[] = [
     } as Quest,
     {
         questId: new mongoose.Types.ObjectId(),
-        questName: "I am a memeeemer :D",
+        questName: "It's Elementary",
         questRarity: generateRarity(),
         questType: QuestType.DAILY,
-        description: "The servers meme quota is low. Make a meme. FAAAST! also, make it good enough to get upvoted.",
+        description: "calculate 6/2(1+2)",
         generatedOn: new Date(),
         questStatus: QuestStatus.ACTIVE,
     } as Quest,
@@ -65,10 +65,32 @@ export const allQuests: Quest[] = [
     } as Quest,
     {
         questId: new mongoose.Types.ObjectId(),
-        questName: "This is impossible to do :D",
+        questName: "Impossible Quest",
         questRarity: generateRarity(),
         questType: QuestType.WEEKLY,
-        description: "LOL XD",
+        description: "LOL XD try again next week",
+        generatedOn: new Date(),
+        questStatus: QuestStatus.ACTIVE,
+    } as Quest,
+    {
+        questId: new mongoose.Types.ObjectId(),
+        questName: "Firecapped",
+        questRarity: generateRarity(),
+        questType: QuestType.WEEKLY,
+        description: "Tell other members to go get firecape in runescape",
+        generatedOn: new Date(),
+        questStatus: QuestStatus.ACTIVE,
+        optionalAttributes:{
+            completionSteps: 5,
+            currentCompletionSteps: 0,
+        }
+    } as Quest,
+    {
+        questId: new mongoose.Types.ObjectId(),
+        questName: "Intergral Solutions",
+        questRarity: generateRarity(),
+        questType: QuestType.WEEKLY,
+        description: "Calculate the integral of sin(x^2) from 0 to infinity",
         generatedOn: new Date(),
         questStatus: QuestStatus.ACTIVE,
     } as Quest,
@@ -97,9 +119,9 @@ export const getQuestRewardBasedOnRarity = (questRarity: QuestRarity, questType:
         case QuestRarity.RARE:
             return 500 + x * 500;
         case QuestRarity.EPIC:
-            return 750 + x * 750;
+            return 750 + x / 3 * 1250;
         case QuestRarity.LEGENDARY:
-            return 1000 + x * 1000 ;
+            return 1000 + x / 3 * 2500 ;
         default:
             return 0;
     }

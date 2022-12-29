@@ -14,6 +14,11 @@ const questSchema = new Schema({
       generatedOn: Date,
       completedOn: Date,
       questStatus: String,
+      optionalAttributes: {
+        target: [String],
+        completionSteps: Number,
+        currentCompletionSteps: Number,
+      },
     },
   ],
 });
