@@ -36,10 +36,7 @@ export const Crimes: Command = {
     if (interaction.guild) {
       const date = new Date();
 
-      const offenceList = await fetchOffencesForUser(
-        interaction.guild,
-        user,
-      );
+      const offenceList = await fetchOffencesForUser(interaction.guild, user);
 
       content =
         user.username + " : Crimes since " + date.getUTCDate() + " 👮\n";
@@ -49,12 +46,18 @@ export const Crimes: Command = {
         content = "The user has committed " + amount + "x crimes🙄\n```";
 
         offenceList.forEach((u) => {
-          if(content.length < 1500){
-            content += user.username + ": " + u.offenceDescription + " | " + u.karmaChange + "\n";
+          if (content.length < 1500) {
+            content +=
+              user.username +
+              ": " +
+              u.offenceDescription +
+              " | " +
+              u.karmaChange +
+              "\n";
           }
         });
         content += "```";
-        if(content.length > 1500){
+        if (content.length > 1500) {
           content += "and more...";
         }
       } else {

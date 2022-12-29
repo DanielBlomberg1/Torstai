@@ -1,3 +1,8 @@
+import {
+  generateDailyQuest,
+  generateWeeklyQuest,
+  getQuestRewardBasedOnRarity,
+} from "./../utils/questlists";
 import { Guild, GuildMember, PartialGuildMember, User } from "discord.js";
 import configmodel from "./schemas/serverconfig";
 import offencesmodel from "./schemas/offencesmodel";
@@ -7,6 +12,7 @@ import {
   OffenceType,
   YearlyOffences,
   WeeklyOffences,
+  OffenceEnum,
 } from "./schemas/offencesmodel.types";
 
 import { getCurrentWeek, getCurrentYear } from "../utils/dateUtils";
@@ -15,8 +21,20 @@ import {
   GuildData,
   MemberData as MemberData,
 } from "./schemas/guilds.types";
+import questmodel from "./schemas/quest";
+import {
+  IQuestDocument,
+  Quest,
+  QuestStatus,
+  QuestType,
+} from "./schemas/questmodel.types";
+import { Print } from "../utils/Print";
 
-const putOptions = { upsert: true, new: true, setDefaultsOnInsert: true };
+export const putOptions = {
+  upsert: true,
+  new: true,
+  setDefaultsOnInsert: true,
+};
 
 export const fetchPrefix = async function (id: string) {
   const config = await configmodel.findOne({ guildId: id });
@@ -73,9 +91,11 @@ export const putGuild = async function (guild: Guild | null) {
 
     await guildModel.insertMany(guildData);
 
-    console.log("Added new guild to database");
+    Print("Added new guild " + guild.name + " to database");
   } else {
-    console.log("Guild already exists in database");
+    Print(
+      "Tried adding guild " + guild.name + " to database, but it already exists"
+    );
   }
 };
 
@@ -87,7 +107,7 @@ export const addGuildMember = async function (member: GuildMember) {
     { $push: { users: memberData } }
   );
 
-  console.log("Added new guild member to database");
+  Print("Added new guild member " + member.user.username + " to the database");
 };
 
 export const removeGuildMember = async function (
@@ -106,7 +126,9 @@ export const removeGuildMember = async function (
     },
   });
 
-  console.log("Deactivated guild member from database");
+  Print(
+    "Deactivated guild member: " + member.user.username + "  from database"
+  );
 };
 
 export const updateGuildMember = async function (member: GuildMember) {
@@ -133,11 +155,11 @@ export const updateGuildMember = async function (member: GuildMember) {
     },
   });
 
-  console.log("Updated user " + member.user.username);
+  Print("Updated user " + member.user.username);
 };
 
 export const updateGuildData = async function (guild: Guild) {
-  console.log("Updating guild " + guild.name);
+  Print("Updating guild " + guild.name);
 
   const update = {
     guildId: guild.id,
@@ -262,7 +284,7 @@ const updateForNewWeek = async function (
   const update = {
     yearlyOffences: [
       newYearly,
-      ...offender.yearlyOffences.filter((y: any) => y.year !== year),
+      ...offender.yearlyOffences.filter((y: YearlyOffences) => y.year !== year),
     ],
   };
 
@@ -307,7 +329,7 @@ const updateForExistingWeek = async function (
   const update = {
     yearlyOffences: [
       newYearly,
-      ...offender.yearlyOffences.filter((y: any) => y.year !== year),
+      ...offender.yearlyOffences.filter((y: YearlyOffences) => y.year !== year),
     ],
   };
 
@@ -505,4 +527,274 @@ export const fetchGoodDeeds = async function () {
   */
 
   return offs;
+};
+
+const CheckIfQuestOfThisTypeWasCompletedAlready = async function (
+  quests: Quest[],
+  questType: QuestType
+) {
+  const time = new Date();
+  time.setDate(0 - (questType === QuestType.WEEKLY ? 7 : 1));
+
+  const ActiveCompletedQuests = quests.filter(
+    (q) => q.questType === questType && q.questStatus === QuestStatus.COMPLETED
+  );
+  let userHasDoneQuestThisWeek = false;
+
+  ActiveCompletedQuests.forEach((quest: Quest) => {
+    if (quest.generatedOn.getDate() === time.getDate()) {
+      userHasDoneQuestThisWeek = true;
+    }
+  });
+  return userHasDoneQuestThisWeek;
+};
+
+export const getQuestsForUser = async function (user: User, guild: Guild) {
+  const usersquests: IQuestDocument[] = await questmodel.find({
+    userId: user.id,
+    guildId: guild.id,
+  });
+
+  // generate new guest if user doesnt have one active already
+  // if users active quest is completed add good deed
+  // if users quest is a daily one and it was generated yesterday, generate a new one
+  // if users quest is a weekly one and it was generated last week, generate a new one
+
+  const quests = usersquests[0]?.quests || [];
+
+  const today = new Date();
+  const yesterday = new Date(today);
+  const weekAgo = new Date(today);
+
+  yesterday.setDate(yesterday.getDate() - 1);
+  weekAgo.setDate(weekAgo.getDate() - 7);
+
+  const activeQuests = quests.filter(
+    (q) => q.questStatus === QuestStatus.ACTIVE
+  );
+  const dailyQuest = activeQuests.filter((q) => q.questType == QuestType.DAILY);
+  const weeklyQuest = activeQuests.filter(
+    (q) => q.questType == QuestType.WEEKLY
+  );
+
+  const newQuests: Quest[] = [];
+
+  if (activeQuests.length == 0) {
+    // no active quests, generate one
+
+    if (!CheckIfQuestOfThisTypeWasCompletedAlready(quests, QuestType.DAILY)) {
+      const quest = generateDailyQuest();
+      newQuests.push(quest);
+      Print(
+        "user: " + user.username + " now has a new quest " + quest.questName
+      );
+    }
+    if (!CheckIfQuestOfThisTypeWasCompletedAlready(quests, QuestType.WEEKLY)) {
+      const quest = generateWeeklyQuest();
+      newQuests.push(quest);
+      Print(
+        "user: " + user.username + " now has a new quest " + quest.questName
+      );
+    }
+  } else {
+    // check if active quests are completed
+    if (dailyQuest.length > 0) {
+      dailyQuest.forEach((q) => {
+        if (q.generatedOn.getDate() < yesterday.getDate()) {
+          Print(
+            "user: " +
+              user.username +
+              "failed daily quest, generating new one..."
+          );
+
+          q.questStatus = QuestStatus.FAILED;
+          // daily quest was generated yesterday, generate a new one
+          const quest = generateDailyQuest();
+
+          Print(
+            "user: " + user.username + " now has a new quest " + quest.questName
+          );
+
+          newQuests.push(quest);
+        }
+      });
+    } else {
+      const userHasDoneDailyQuestToday =
+        await CheckIfQuestOfThisTypeWasCompletedAlready(
+          quests,
+          QuestType.DAILY
+        );
+      if (!userHasDoneDailyQuestToday) {
+        Print(
+          "user: " +
+            user.username +
+            "completed daily quest, generating new one..."
+        );
+
+        const quest = generateDailyQuest();
+
+        Print(
+          "user: " + user.username + " now has a new quest " + quest.questName
+        );
+
+        newQuests.push(quest);
+      }
+    }
+    if (weeklyQuest.length > 0) {
+      weeklyQuest.forEach((q) => {
+        if (q.generatedOn.getDate() < weekAgo.getDate()) {
+          Print(
+            "user: " +
+              user.username +
+              "failed weekly quest, generating new one..."
+          );
+          q.questStatus = QuestStatus.FAILED;
+          // weekly quest was generated weekago, generate a new one
+          const quest = generateWeeklyQuest();
+          Print(
+            "user: " + user.username + " now has a new quest " + quest.questName
+          );
+          newQuests.push(quest);
+        }
+      });
+    } else {
+      const userHasDoneQuestThisWeek =
+        CheckIfQuestOfThisTypeWasCompletedAlready(quests, QuestType.WEEKLY);
+      if (!userHasDoneQuestThisWeek) {
+        Print(
+          "user: " +
+            user.username +
+            "completed weekly quest, generating new one..."
+        );
+
+        const quest = generateWeeklyQuest();
+
+        Print(
+          "user: " + user.username + " now has a new quest " + quest.questName
+        );
+
+        newQuests.push(quest);
+      }
+    }
+  }
+
+  const update = {
+    quests: [...quests, ...newQuests],
+  };
+
+  if (update.quests.length > quests.length) {
+    const model = await questmodel.findOneAndUpdate(
+      { userId: user.id, guildId: guild.id },
+      update,
+      putOptions
+    );
+
+    model?.save();
+  }
+
+  return update.quests;
+};
+
+export const getActiveQuestsForUser = async function (
+  user: User,
+  guild: Guild
+) {
+  const quests = await getQuestsForUser(user, guild);
+  return quests.filter((q) => q.questStatus === QuestStatus.ACTIVE);
+};
+
+export const getWeeklyAndDailyQuestsForUser = async function (
+  user: User,
+  guild: Guild
+) {
+  const today = new Date();
+  const weekago = new Date();
+
+  weekago.setDate(weekago.getDate() - 7);
+
+  const quests = await getQuestsForUser(user, guild);
+  return quests.filter(
+    (q) =>
+      (q.questType === QuestType.DAILY &&
+        today.getDate() === q.generatedOn.getDate()) ||
+      (q.questType === QuestType.WEEKLY &&
+        weekago.getDate() < q.generatedOn.getDate())
+  );
+};
+
+export const getServerAdminName = async function (guild: Guild) {
+  return (await guild.fetchOwner()).user.username;
+};
+
+export const completeQuest = async function (
+  user: User,
+  guild: Guild,
+  quest: Quest
+) {
+  Print("USER: " + user.username + " completed quest: " + quest.questName);
+  const query = {
+    guildId: guild.id,
+    userId: user.id,
+    "quests.questId": quest.questId,
+  };
+
+  await questmodel.updateOne(query, {
+    $set: {
+      "quests.$.questStatus": QuestStatus.COMPLETED,
+    },
+  });
+
+  const offence: OffenceType = {
+    offenceType: OffenceEnum.quest,
+    offenceDescription:
+      quest.questName + " " + quest.questRarity + " completed",
+    commitedOn: new Date(),
+    karmaChange: 1500,
+    newKarma: 0,
+  };
+
+  await putOffence(
+    guild,
+    user,
+    offence,
+    getQuestRewardBasedOnRarity(quest.questRarity, quest.questType)
+  );
+
+  getQuestsForUser(user, guild);
+};
+
+export const partialCompleteQuest = async function (
+  user: User,
+  guild: Guild,
+  quest: Quest
+) {
+  Print("USER: " + user.username + " progressed on quest: " + quest.questName);
+  const query = {
+    guildId: guild.id,
+    userId: user.id,
+    "quests.questId": quest.questId,
+  };
+
+  if (
+    !(
+      quest.optionalAttributes !== undefined &&
+      quest.optionalAttributes.completionSteps !== undefined &&
+      quest.optionalAttributes.currentCompletionSteps !== undefined
+    )
+  ) {
+    return;
+  }
+
+  if (
+    quest?.optionalAttributes?.completionSteps <=
+    quest?.optionalAttributes?.currentCompletionSteps
+  ) {
+    completeQuest(user, guild, quest);
+  } else {
+    await questmodel.updateOne(query, {
+      $inc: {
+        "quests.$.optionalAttributes.currentCompletionSteps": 1,
+      },
+    });
+  }
 };

@@ -1,8 +1,8 @@
 export const getCurrentWeek = () => {
-  let date = new Date();
+  const date = new Date();
   date.setHours(0, 0, 0, 0);
   date.setDate(date.getDate() + 3 - ((date.getDay() + 6) % 7));
-  let week1 = new Date(date.getFullYear(), 0, 4);
+  const week1 = new Date(date.getFullYear(), 0, 4);
   return (
     1 +
     Math.round(
@@ -15,6 +15,6 @@ export const getCurrentWeek = () => {
 };
 
 export const getCurrentYear = () => {
-  let date = new Date();
+  const date = new Date();
   return date.getFullYear();
 };

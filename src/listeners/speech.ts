@@ -2,7 +2,7 @@ import { fetchPrefix, fetchTextChannel } from "./../Database/Mongoose";
 import { VoiceMessage } from "discord-speech-recognition";
 import { Client, Guild, TextChannel, User } from "discord.js";
 import fs from "fs";
-import YTDlpWrap from 'yt-dlp-wrap';
+import YTDlpWrap from "yt-dlp-wrap";
 
 import { PlaySoundEffect } from "../audio/SoundEffectPlayer";
 
@@ -15,7 +15,7 @@ import CheckForGoodWords from "../utils/CheckForGoodWords";
 const outputPath = "./public/output.mp3";
 let isDownloading = false;
 
-const ytdlp = new YTDlpWrap('./public/yt-dlp.exe');
+const ytdlp = new YTDlpWrap("./public/yt-dlp.exe");
 
 const tryToSend = (channel: TextChannel, msg: string, author: User) => {
   const name = channel.guild.name;
@@ -125,13 +125,22 @@ const timeBasedCommands = async (msg: VoiceMessage) => {
     if (!fs.existsSync(outputPath) && !isDownloading && ytdlp) {
       isDownloading = true;
       const randomnumber = Math.floor(Math.random() * susaudioclips.length);
-      
+
       Print("Started downloading sus audio clip");
-      ytdlp.execPromise([susaudioclips[randomnumber], "-x", "--audio-format", "mp3", "-o", outputPath]).then(() => {
-        Print("Downloaded Sus file at 3AM");
-        isDownloading = false;
-        PlaySoundEffect(msg.guild, outputPath);
-      });
+      ytdlp
+        .execPromise([
+          susaudioclips[randomnumber],
+          "-x",
+          "--audio-format",
+          "mp3",
+          "-o",
+          outputPath,
+        ])
+        .then(() => {
+          Print("Downloaded Sus file at 3AM");
+          isDownloading = false;
+          PlaySoundEffect(msg.guild, outputPath);
+        });
     }
   }
 };

@@ -6,7 +6,10 @@ import {
   User,
 } from "discord.js";
 import { Command } from "../interfaces/Command";
-import { fetchStandings, fetchStandingsForGivenWeek } from "../Database/Mongoose";
+import {
+  fetchStandings,
+  fetchStandingsForGivenWeek,
+} from "../Database/Mongoose";
 import { getCurrentWeek, getCurrentYear } from "../utils/dateUtils";
 
 export const GetStandings: Command = {
@@ -49,7 +52,10 @@ const getStandingForCurrentWeek = async (interaction: CommandInteraction) => {
     const userlist = await fetchStandings(interaction.guild);
     content =
       interaction.guild.name +
-      " :  Karma Leaderboard : " + year +  "/" + weekNumber + 
+      " :  Karma Leaderboard : " +
+      year +
+      "/" +
+      weekNumber +
       "\n";
     if (userlist.length > 0) {
       content += "```";
@@ -78,9 +84,18 @@ const getStandingsForGivenWeek = async (
   let content = "success";
 
   if (interaction.guild) {
-    const userlist = await fetchStandingsForGivenWeek(interaction.guild, week, year);
+    const userlist = await fetchStandingsForGivenWeek(
+      interaction.guild,
+      week,
+      year
+    );
     content =
-      interaction.guild.name + " : Karma Leaderboard : " + year +  "/" + week + "\n";
+      interaction.guild.name +
+      " : Karma Leaderboard : " +
+      year +
+      "/" +
+      week +
+      "\n";
     if (userlist.length > 0) {
       content += "```";
       userlist.forEach((u) => {
