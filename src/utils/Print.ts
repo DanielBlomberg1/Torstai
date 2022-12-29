@@ -4,7 +4,7 @@ import {
   ServerToClientEvents,
 } from "src/types/socketio.types";
 
-const token = process.env.SOCKETIO_AUTH_TOKEN;
+const token: string = process.env.SOCKETIO_AUTH_TOKEN || "";
 
 const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(
   "http://localhost:5000",
@@ -15,18 +15,6 @@ const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(
   }
 );
 
-console.log(token);
-
-socket.on("connect", () => {
-  console.log("Connected to backend");
-
-  socket.emit("torstai", "Torstai connected");
-});
-
-socket.on("connect_error", (err) => {
-  console.log(err.message);
-});
-
 export const Print = (s: string) => {
   const date: Date = new Date();
 
@@ -34,3 +22,13 @@ export const Print = (s: string) => {
 
   console.log(date.toUTCString() + " " + s);
 };
+
+socket.on("connect", () => {
+  Print("Torstai connected to backend");
+});
+
+socket.on("connect_error", (err) => {
+  Print(err.message);
+});
+
+Print(token);
