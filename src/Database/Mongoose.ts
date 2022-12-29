@@ -284,7 +284,7 @@ const updateForNewWeek = async function (
   const update = {
     yearlyOffences: [
       newYearly,
-      ...offender.yearlyOffences.filter((y: any) => y.year !== year),
+      ...offender.yearlyOffences.filter((y: YearlyOffences) => y.year !== year),
     ],
   };
 
@@ -329,7 +329,7 @@ const updateForExistingWeek = async function (
   const update = {
     yearlyOffences: [
       newYearly,
-      ...offender.yearlyOffences.filter((y: any) => y.year !== year),
+      ...offender.yearlyOffences.filter((y: YearlyOffences) => y.year !== year),
     ],
   };
 

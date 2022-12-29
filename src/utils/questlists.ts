@@ -120,7 +120,7 @@ export const getQuestRewardBasedOnRarity = (
   questRarity: QuestRarity,
   questType: QuestType
 ): number => {
-  let x = questType === QuestType.DAILY ? 0 : 3;
+  const x = questType === QuestType.DAILY ? 0 : 3;
   switch (questRarity) {
     case QuestRarity.COMMON:
       return 100 + x * 100;

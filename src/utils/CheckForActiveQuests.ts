@@ -62,6 +62,7 @@ export const CheckForActiveQuests = async (
         if (msg.toLowerCase().includes("missä firecape?")) {
           partialCompleteQuest(user, guild, quest);
         }
+        break;
       default:
         break;
     }

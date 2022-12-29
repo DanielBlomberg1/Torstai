@@ -15,9 +15,9 @@ export interface Quest {
   generatedOn: Date;
   questStatus: QuestStatus;
   optionalAttributes?: {
-    target?: [String];
-    completionSteps?: Number;
-    currentCompletionSteps?: Number;
+    target?: [string];
+    completionSteps?: number;
+    currentCompletionSteps?: number;
   };
 }
 
