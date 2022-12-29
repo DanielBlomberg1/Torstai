@@ -4,7 +4,7 @@ import {
   ServerToClientEvents,
 } from "src/types/socketio.types";
 
-const token: string = process.env.SOCKETIO_AUTH_TOKEN || "";
+const token = process.env.SOCKETIO_AUTH_TOKEN;
 
 const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(
   "http://localhost:5000",
@@ -28,7 +28,5 @@ socket.on("connect", () => {
 });
 
 socket.on("connect_error", (err) => {
-  Print(token);
-
   Print(err.message);
 });
