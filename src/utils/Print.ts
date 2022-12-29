@@ -15,8 +15,16 @@ const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(
   }
 );
 
+console.log(token);
+
 socket.on("connect", () => {
+  console.log("Connected to backend");
+
   socket.emit("torstai", "Torstai connected");
+});
+
+socket.on("connect_error", (err) => {
+  console.log(err.message);
 });
 
 export const Print = (s: string) => {
