@@ -28,7 +28,7 @@ socket.on("connect", () => {
 });
 
 socket.on("connect_error", (err) => {
+  Print(token);
+
   Print(err.message);
 });
-
-Print(token);
