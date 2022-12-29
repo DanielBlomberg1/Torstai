@@ -27,7 +27,7 @@ export const CheckForActiveQuests = async (
         break;
       case "Jörmy is hungry":
         if (msg.toLowerCase().includes("jörmy")) {
-          if (msg.toLowerCase().includes(":hamburger:")) {
+          if (msg.toLowerCase().includes("🍔")) {
             completeQuest(user, guild, quest);
           }
         }
@@ -49,7 +49,7 @@ export const CheckForActiveQuests = async (
         }
         break;
       case "Impossible Quest":
-        if (msg.toLowerCase().includes("JESSS HYVÄ FIILIS! PERJANTAII")) {
+        if (msg.toLowerCase().includes("jesss hyvä fiilis perjantaai")) {
           completeQuest(user, guild, quest);
         }
         break;

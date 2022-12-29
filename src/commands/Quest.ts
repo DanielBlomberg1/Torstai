@@ -27,7 +27,7 @@ export const Quest: Command = {
       // generate completion string currnetCompletionSteps/completionSteps
       // if completionSteps is 0, then we don't want to show the completion string
       let completionStringDaily = "0/0";
-      if (dQ.optionalAttributes?.completionSteps !== undefined) {
+      if (dQ?.optionalAttributes !== undefined && dQ?.optionalAttributes?.completionSteps !== undefined) {
         completionStringDaily =
           dQ.optionalAttributes.currentCompletionSteps +
           "/" +
@@ -35,7 +35,7 @@ export const Quest: Command = {
       }
 
       let completionStringWeekly = "0/0";
-      if (wQ.optionalAttributes?.completionSteps !== undefined) {
+      if (wQ?.optionalAttributes !== undefined && wQ.optionalAttributes?.completionSteps !== undefined) {
         completionStringWeekly =
           wQ.optionalAttributes.currentCompletionSteps +
           "/" +

@@ -542,7 +542,7 @@ const CheckIfQuestOfThisTypeWasCompletedAlready = async function (
   let userHasDoneQuestThisWeek = false;
 
   ActiveCompletedQuests.forEach((quest: Quest) => {
-    if (quest.generatedOn.getDate() === time.getDate()) {
+    if (quest.generatedOn.getDate() >= time.getDate()) {
       userHasDoneQuestThisWeek = true;
     }
   });
@@ -559,6 +559,7 @@ export const getQuestsForUser = async function (user: User, guild: Guild) {
   // if users active quest is completed add good deed
   // if users quest is a daily one and it was generated yesterday, generate a new one
   // if users quest is a weekly one and it was generated last week, generate a new one
+  
 
   const quests = usersquests[0]?.quests || [];
 
@@ -581,15 +582,14 @@ export const getQuestsForUser = async function (user: User, guild: Guild) {
 
   if (activeQuests.length == 0) {
     // no active quests, generate one
-
-    if (!CheckIfQuestOfThisTypeWasCompletedAlready(quests, QuestType.DAILY)) {
+    if (!(await CheckIfQuestOfThisTypeWasCompletedAlready(quests, QuestType.DAILY))) {
       const quest = generateDailyQuest();
       newQuests.push(quest);
       Print(
         "user: " + user.username + " now has a new quest " + quest.questName
       );
     }
-    if (!CheckIfQuestOfThisTypeWasCompletedAlready(quests, QuestType.WEEKLY)) {
+    if (!(await CheckIfQuestOfThisTypeWasCompletedAlready(quests, QuestType.WEEKLY))) {
       const quest = generateWeeklyQuest();
       newQuests.push(quest);
       Print(
