@@ -4,11 +4,14 @@ import {
   ServerToClientEvents,
 } from "src/types/socketio.types";
 
+const token: string = process.env.SOCKETIO_AUTH_TOKEN || "";
+const backendUrl: string = process.env.BACKEND_URL || "";
+
 const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(
-  "http://192.168.1.3:5000",
+  backendUrl,
   {
     auth: {
-      token: process.env.SOCKETIO_AUTH_TOKEN,
+      token: token,
     },
   }
 );

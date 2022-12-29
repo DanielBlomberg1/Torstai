@@ -1,6 +1,9 @@
+import dotenv from "dotenv";
+
+dotenv.config({ path: __dirname + "/../.env" });
+
 import { Client, GatewayIntentBits } from "discord.js";
 import { addSpeechEvent } from "discord-speech-recognition";
-import dotenv from "dotenv";
 
 // listeners
 import ready from "./listeners/ready";
@@ -13,8 +16,6 @@ import onGuildUpdate from "./listeners/onGuildUpdate";
 // db
 import { connect } from "mongoose";
 import { installIfNotInstalled } from "./utils/ytdlp";
-
-dotenv.config({ path: __dirname + "/../.env" });
 
 const token = process.env.BOT_TOKEN;
 const dbToken = process.env.DB_TOKEN as string;
