@@ -4,10 +4,9 @@ WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-RUN npm install
+RUN yarn global add ts-node
+RUN yarn
 
 COPY . .
-
-EXPOSE 3000
 
 CMD [ "ts-node", "src/Bot.ts" ]
