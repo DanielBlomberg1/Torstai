@@ -538,7 +538,7 @@ const CheckIfQuestOfThisTypeWasCompletedAlready = async function (
   questType: QuestType
 ) {
   const time = new Date();
-  time.setDate(0 - (questType === QuestType.WEEKLY ? 7 : 1));
+  time.setDate(0 - (questType === QuestType.WEEKLY ? 7 : 0));
 
   const ActiveCompletedQuests = quests.filter(
     (q) => q.questType === questType && q.questStatus === QuestStatus.COMPLETED
@@ -582,7 +582,20 @@ export const getQuestsForUser = async function (user: User, guild: Guild) {
   );
 
   const newQuests: Quest[] = [];
+/*
+  console.log("active quests: " + activeQuests.length)
+  console.log("daily quests: " + dailyQuest.length)
+  console.log("weekly quests: " + weeklyQuest.length)
+  console.log((await CheckIfQuestOfThisTypeWasCompletedAlready(
+    quests,
+    QuestType.DAILY
+  )))
+  console.log((await CheckIfQuestOfThisTypeWasCompletedAlready(
+    quests,
+    QuestType.WEEKLY
+  )))
 
+  */
 
   if (activeQuests.length === 0) {
     // no active quests, generate one
@@ -740,7 +753,7 @@ export const getWeeklyAndDailyQuestsForUser = async function (
       (q.questType === QuestType.DAILY &&
         today.getDate() === q.generatedOn.getDate()) ||
       (q.questType === QuestType.WEEKLY &&
-        weekago.getDate() < q.generatedOn.getDate())
+       getWeekNumber(today) >= getWeekNumber(q.generatedOn) || today.getFullYear() > q.generatedOn.getFullYear())
   );
 };
 
