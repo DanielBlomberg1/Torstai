@@ -15,7 +15,11 @@ import {
   OffenceEnum,
 } from "./schemas/offencesmodel.types";
 
-import { getCurrentWeek, getCurrentYear } from "../utils/dateUtils";
+import {
+  getCurrentWeek,
+  getCurrentYear,
+  getWeekNumber,
+} from "../utils/dateUtils";
 import {
   AuthLevel,
   GuildData,
@@ -559,7 +563,6 @@ export const getQuestsForUser = async function (user: User, guild: Guild) {
   // if users active quest is completed add good deed
   // if users quest is a daily one and it was generated yesterday, generate a new one
   // if users quest is a weekly one and it was generated last week, generate a new one
-  
 
   const quests = usersquests[0]?.quests || [];
 
@@ -580,16 +583,28 @@ export const getQuestsForUser = async function (user: User, guild: Guild) {
 
   const newQuests: Quest[] = [];
 
-  if (activeQuests.length == 0) {
+
+  if (activeQuests.length === 0) {
     // no active quests, generate one
-    if (!(await CheckIfQuestOfThisTypeWasCompletedAlready(quests, QuestType.DAILY))) {
+
+    if (
+      !(await CheckIfQuestOfThisTypeWasCompletedAlready(
+        quests,
+        QuestType.DAILY
+      ))
+    ) {
       const quest = generateDailyQuest();
       newQuests.push(quest);
       Print(
         "user: " + user.username + " now has a new quest " + quest.questName
       );
     }
-    if (!(await CheckIfQuestOfThisTypeWasCompletedAlready(quests, QuestType.WEEKLY))) {
+    if (
+      !(await CheckIfQuestOfThisTypeWasCompletedAlready(
+        quests,
+        QuestType.WEEKLY
+      ))
+    ) {
       const quest = generateWeeklyQuest();
       newQuests.push(quest);
       Print(
@@ -600,11 +615,15 @@ export const getQuestsForUser = async function (user: User, guild: Guild) {
     // check if active quests are completed
     if (dailyQuest.length > 0) {
       dailyQuest.forEach((q) => {
-        if (q.generatedOn.getDate() < yesterday.getDate()) {
+        if (
+          q.generatedOn.getDate() < today.getDate() ||
+          q.generatedOn.getMonth() < today.getMonth() ||
+          q.generatedOn.getFullYear() < today.getFullYear()
+        ) {
           Print(
             "user: " +
               user.username +
-              "failed daily quest, generating new one..."
+              " failed daily quest, generating new one..."
           );
 
           q.questStatus = QuestStatus.FAILED;
@@ -628,7 +647,7 @@ export const getQuestsForUser = async function (user: User, guild: Guild) {
         Print(
           "user: " +
             user.username +
-            "completed daily quest, generating new one..."
+            " completed daily quest, generating new one..."
         );
 
         const quest = generateDailyQuest();
@@ -642,7 +661,10 @@ export const getQuestsForUser = async function (user: User, guild: Guild) {
     }
     if (weeklyQuest.length > 0) {
       weeklyQuest.forEach((q) => {
-        if (q.generatedOn.getDate() < weekAgo.getDate()) {
+        if (
+          getWeekNumber(q.generatedOn) <= getWeekNumber(weekAgo) ||
+          q.generatedOn.getFullYear() < weekAgo.getFullYear()
+        ) {
           Print(
             "user: " +
               user.username +

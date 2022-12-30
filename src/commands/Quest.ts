@@ -24,6 +24,14 @@ export const Quest: Command = {
           quest.questType === QuestType.WEEKLY
       )[0];
 
+      if(dQ === undefined || wQ === undefined) {
+        await interaction.followUp({
+          ephemeral: true,
+          content,
+        });
+        return;
+      }
+
       // generate completion string currnetCompletionSteps/completionSteps
       // if completionSteps is 0, then we don't want to show the completion string
       let completionStringDaily = "0/0";
