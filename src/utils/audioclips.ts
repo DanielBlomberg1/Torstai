@@ -15,6 +15,9 @@ export const audioclips = [
   "coconut",
   "fakta",
   "tapellaan",
+  "rasisti",
+  "draama",
+  "tyhmyri",
 ] as const;
 export const susaudioclips = [
   "https://www.youtube.com/watch?v=n8foumUixN4",
