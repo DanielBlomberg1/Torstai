@@ -64,7 +64,7 @@ export const Crimes: Command = {
         content = "No Crimes😍";
       }
     }
-
+    
     await interaction.followUp({
       ephemeral: true,
       content,
