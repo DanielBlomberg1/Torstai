@@ -8,11 +8,9 @@ import { Command } from "./interfaces/Command";
 import { Test } from "./commands/TestCommand";
 import { Record } from "./commands/Record";
 import { GetStandings } from "./commands/GetStadings";
-import { Quest } from "./commands/Quest";
 
 export const Commands: Command[] = [
   AddmanualKarma,
-  Quest,
   Test,
   JoinVC,
   Disconnect,

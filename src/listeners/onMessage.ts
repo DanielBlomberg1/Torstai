@@ -2,7 +2,6 @@ import { Client, Message } from "discord.js";
 import CheckForGoodWords from "../utils/CheckForGoodWords";
 import { OffenceEnum } from "../Database/schemas/offencesmodel.types";
 import CheckForBadWords from "../utils/CheckForBadWords";
-import { CheckForActiveQuests } from "../utils/CheckForActiveQuests";
 import { Print } from "../utils/Print";
 
 // this is not working for whatever reason
@@ -17,10 +16,6 @@ export default (client: Client): void => {
       );
 
       CheckForGoodWords(msg.content, msg.author, msg.guild);
-
-      if (!msg.author.bot) {
-        CheckForActiveQuests(msg.content, msg.author, msg.guild);
-      }
 
       if (msg.content.length > 0) {
         Print(msg.author.username + ": " + msg.content);
