@@ -32,6 +32,8 @@ export default (client: Client): void => {
     const botId = client.user?.id as string;
     let c = getVoiceConnection(newState.guild.id);
     const boolean = await fetchAutoJoin(newState.guild.id);
+    
+
     // if bot not in voice and somebody joins voice
     if (!c && boolean) {
       let size = 0;
@@ -65,9 +67,17 @@ export default (client: Client): void => {
         c = getVoiceConnection(newState.guild.id);
       }
     }
-    if (!c) {
+    if (!c || !boolean) {
+      PlayerStopPlaying();
       return;
     }
+
+    
+    if (!newState.channel){
+      PlayerStopPlaying();
+      selfDestruct(c);
+    }
+
 
     const oldSz: number = oldState.channel?.members.size as number;
     const newSz: number = newState.channel?.members.size as number;
