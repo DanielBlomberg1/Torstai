@@ -5,6 +5,7 @@ import {
   getVoiceConnection,
   joinVoiceChannel,
   VoiceConnection,
+  VoiceConnectionStatus,
 } from "@discordjs/voice";
 import { Print } from "../utils/Print";
 import fs from "fs";
@@ -71,8 +72,9 @@ export default (client: Client): void => {
     let c = getVoiceConnection(newState.guild.id);
     const autoJoin = await fetchAutoJoin(newState.guild.id);
 
+
     // if bot not in voice and somebody joins voice
-    if (c === undefined && autoJoin) {
+    if (c === undefined || c.state.status === VoiceConnectionStatus.Disconnected && autoJoin) {
       let size = 0;
       let curId = "";
       let curName = "";
