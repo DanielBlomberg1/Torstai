@@ -1,11 +1,10 @@
 import { fetchAutoJoin } from "./../Database/Mongoose";
-import { Client, VoiceBasedChannel } from "discord.js";
+import { Client, VoiceChannel, VoiceState } from "discord.js";
 import {
   DiscordGatewayAdapterCreator,
   getVoiceConnection,
   joinVoiceChannel,
   VoiceConnection,
-  VoiceConnectionStatus,
 } from "@discordjs/voice";
 import { Print } from "../utils/Print";
 import fs from "fs";
@@ -14,10 +13,6 @@ import { PlayerStopPlaying } from "../audio/SoundEffectPlayer";
 const tempFile3AM = "./public/output.mp3";
 
 const selfDestruct = (c: VoiceConnection) => {
-  if (c.state.status === VoiceConnectionStatus.Destroyed) {
-    Print("Already destroyed");
-    return;
-  }
   c.destroy();
   Print("Only bots here... disconnecting...");
   PlayerStopPlaying();
@@ -32,10 +27,10 @@ const selfDestruct = (c: VoiceConnection) => {
   }
 };
 
-const isBotOnChannel = (c: VoiceBasedChannel, botId: string) => {
+const isBotOnChannel = (c: VoiceChannel, botId:string)=>{
   let isBotOnChannel = false;
   let bots = 0;
-  c.members.forEach((e) => {
+  c?.members.forEach((e) => {
     if (e.id === botId) {
       isBotOnChannel = true;
     }
@@ -44,22 +39,40 @@ const isBotOnChannel = (c: VoiceBasedChannel, botId: string) => {
     }
   });
   return [isBotOnChannel, bots];
+}
+
+const disconnectCheck = (
+  c: VoiceConnection,
+  oldState: VoiceState,
+  newState: VoiceState,
+  botId: string
+) => {
+  const oldSz: number = oldState.channel?.members.size as number;
+  const newSz: number = newState.channel?.members.size as number;
+
+  const [isBotOnOldChannel, oldBots] = isBotOnChannel(oldState.channel as VoiceChannel, botId);
+  const [isBotOnNewChannel, newBotz] = isBotOnChannel(newState.channel as VoiceChannel, botId);
+
+  if (oldState.channel != newState.channel) {
+    if ((isBotOnOldChannel && oldSz < 2) || (isBotOnNewChannel && newSz < 2)) {
+      selfDestruct(c);
+    } else if (
+      (isBotOnOldChannel && oldSz === oldBots) ||
+      (isBotOnNewChannel && newSz === newBotz)
+    ) {
+      selfDestruct(c);
+    }
+  }
 };
 
 export default (client: Client): void => {
   client.on("voiceStateUpdate", async (oldState, newState) => {
     const botId = client.user?.id as string;
-
     let c = getVoiceConnection(newState.guild.id);
     const autoJoin = await fetchAutoJoin(newState.guild.id);
 
     // if bot not in voice and somebody joins voice
-    if (
-      (!c ||
-        c.state.status === VoiceConnectionStatus.Disconnected ||
-        c.state.status === VoiceConnectionStatus.Destroyed) &&
-      autoJoin
-    ) {
+    if (c === undefined && autoJoin) {
       let size = 0;
       let curId = "";
       let curName = "";
@@ -72,11 +85,10 @@ export default (client: Client): void => {
           curName = c.name;
         }
       });
-
       if (curId === "") {
         return;
       }
-      c = joinVoiceChannel({
+      joinVoiceChannel({
         channelId: curId,
         guildId: newState.guild.id as string,
         adapterCreator: newState.guild
@@ -91,39 +103,11 @@ export default (client: Client): void => {
           " because it has a size of " +
           size
       );
+      c = getVoiceConnection(newState.guild.id);
     }
-    //:D
-    if (!c) {
-      // this should be unreachable but typescript needs it
+    if(c === undefined) {
       return;
     }
-
-    const oldSz: number = oldState.channel?.members.size as number;
-    const newSz: number = newState.channel?.members.size as number;
-
-    const [isBotOnOldChannel, oldBots] = isBotOnChannel(
-      oldState.channel as VoiceBasedChannel,
-      botId
-    );
-
-    const [isBotOnNewChannel, newBotz] = isBotOnChannel(
-      newState.channel as VoiceBasedChannel,
-      botId
-    );
-
-    if (oldState.channel === newState.channel) return;
-
-    if (!isBotOnOldChannel && !isBotOnNewChannel) {
-      selfDestruct(c);
-    }
-
-    if ((isBotOnOldChannel && oldSz < 2) || (isBotOnNewChannel && newSz < 2)) {
-      selfDestruct(c);
-    } else if (
-      (isBotOnOldChannel && oldSz === oldBots) ||
-      (isBotOnNewChannel && newSz === newBotz)
-    ) {
-      selfDestruct(c);
-    }
+    disconnectCheck(c, oldState, newState, botId);
   });
 };
