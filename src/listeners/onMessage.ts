@@ -14,7 +14,6 @@ let audioQueue: any[] = [];
 export default (client: Client): void => {
   client.on("messageCreate", async (msg: Message) => {
     if (msg.guild) {
-      if(msg.author.bot){
         // if message is a reply to my message
         if(msg.reference?.messageId === (getFirstMessage() || "0")){
           const connection = getVoiceConnection(msg.guild.id);
@@ -33,7 +32,7 @@ export default (client: Client): void => {
           }
         
           // Generate TTS url
-          const url = googleTTS.getAudioUrl('Perjantai', {
+          const url = googleTTS.getAudioUrl(msg.content, {
             lang: 'fi',
             slow: false,
             host: 'https://translate.google.com',
@@ -47,7 +46,7 @@ export default (client: Client): void => {
 
           removeFirstMessage();
         }
-      }
+      
       CheckForBadWords(
         msg.content.toLowerCase(),
         msg.author,
