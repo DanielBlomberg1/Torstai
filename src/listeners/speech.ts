@@ -13,7 +13,7 @@ import CheckForBadWords from "../utils/CheckForBadWords";
 import { OffenceEnum } from "../Database/schemas/offencesmodel.types";
 import CheckForGoodWords from "../utils/CheckForGoodWords";
 import { AudioPlayerStatus, createAudioPlayer, createAudioResource, getVoiceConnection } from "@discordjs/voice";
-import socket from "src/utils/socket";
+import socket from "../utils/socket";
 
 const outputPath = "./public/output.mp3";
 let isDownloading = false;
