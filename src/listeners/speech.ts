@@ -3,6 +3,7 @@ import { VoiceMessage } from "discord-speech-recognition";
 import { Client, Guild, TextChannel, User } from "discord.js";
 import fs from "fs";
 import YTDlpWrap from "yt-dlp-wrap";
+import * as googleTTS from 'google-tts-api';
 
 import { PlaySoundEffect } from "../audio/SoundEffectPlayer";
 
@@ -11,9 +12,13 @@ import { audioclips, susaudioclips } from "../utils/audioclips";
 import CheckForBadWords from "../utils/CheckForBadWords";
 import { OffenceEnum } from "../Database/schemas/offencesmodel.types";
 import CheckForGoodWords from "../utils/CheckForGoodWords";
+import { AudioPlayerStatus, createAudioPlayer, createAudioResource, getVoiceConnection } from "@discordjs/voice";
+import socket from "src/utils/socket";
 
 const outputPath = "./public/output.mp3";
 let isDownloading = false;
+
+let audioQueue: any[] = [];
 
 const ytdlp = new YTDlpWrap("./public/yt-dlp.exe");
 
@@ -100,6 +105,43 @@ export default (client: Client): void => {
       OffenceEnum.oral
     );
     CheckForGoodWords(msg.content, msg.author, msg.guild);
+
+    if(msg.content.toLowerCase().startsWith("perjantai")) {
+      // I want to make the bot say perjantai in the voice channel
+      const connection = getVoiceConnection(guild.id);
+
+      const player = createAudioPlayer();
+
+      player.on(AudioPlayerStatus.Idle, () => {
+        audioQueue.shift();
+        if (audioQueue.length > 0) {
+          player.play(audioQueue[0]);
+        }
+      });
+
+      if (connection) {
+        connection.subscribe(player);
+      }
+
+      // Send message to Socket.IO server and wait for response
+      let messageContent = msg.content.toLowerCase();
+      messageContent = messageContent.replace('perjantai', '').trim();
+
+      socket.emit('perjantai', messageContent);
+      socket.on('perjantaires', (responseMessage) => {
+        const url = googleTTS.getAudioUrl(responseMessage, {
+          lang: 'fi',
+          slow: false,
+          host: 'https://translate.google.com',
+        });
+
+        const resource = createAudioResource(url);
+        audioQueue.push(resource);
+        if (audioQueue.length === 1) {
+          player.play(resource);
+        }
+      });
+    }
 
     // do some loop here idk its been too long
     runCommand(client, "Soita", "play", message, guild, author);
