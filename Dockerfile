@@ -1,4 +1,5 @@
-FROM node:16
+FROM node:18
+RUN apk update && apk add git
 
 WORKDIR /usr/src/app
 
