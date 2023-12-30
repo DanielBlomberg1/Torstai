@@ -30,9 +30,14 @@ export default (client: Client): void => {
           if (connection) {
             connection.subscribe(player);
           }
-        
+          
+          let content = msg.content;
+          if (content.length > 200) {
+            content = content.substring(0, 200);
+          }
+
           // Generate TTS url
-          const url = googleTTS.getAudioUrl(msg.content, {
+          const url = googleTTS.getAudioUrl(content, {
             lang: 'fi',
             slow: false,
             host: 'https://translate.google.com',
