@@ -8,7 +8,7 @@ import {
 import { Guild } from "discord.js";
 
 //make this modular for multiple servers
-const player = createAudioPlayer();
+export const player = createAudioPlayer();
 
 export const PlaySoundEffect = (guild: Guild, pathToClip: string) => {
   const resource = createAudioResource(pathToClip);

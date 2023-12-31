@@ -4,30 +4,57 @@ import { Client, Guild, TextChannel, User } from "discord.js";
 import fs from "fs";
 import YTDlpWrap from "yt-dlp-wrap";
 
-import { PlaySoundEffect } from "../audio/SoundEffectPlayer";
+import { PlaySoundEffect, player } from "../audio/SoundEffectPlayer";
 
 import { Print } from "../utils/Print";
 import { audioclips, susaudioclips } from "../utils/audioclips";
 import CheckForBadWords from "../utils/CheckForBadWords";
 import { OffenceEnum } from "../Database/schemas/offencesmodel.types";
 import CheckForGoodWords from "../utils/CheckForGoodWords";
-import { addMessage } from "../utils/messageQueue";
+import { AudioPlayerStatus, createAudioPlayer, createAudioResource, getVoiceConnection } from "@discordjs/voice";
+
+import * as googleTTS from 'google-tts-api';
+import socket from "../utils/socket";
+
+let audioQueue: any[] = [];
 
 const outputPath = "./public/output.mp3";
 let isDownloading = false;
 
-
 const ytdlp = new YTDlpWrap("./public/yt-dlp.exe");
 
-const tryToSend = async (channel: TextChannel, msg: string, author: User, saveIt = false) => {
+const handleIdle = () => {
+  audioQueue.shift();
+  if (audioQueue.length > 0) {
+    player.play(audioQueue[0]);
+  } else {
+    player.off(AudioPlayerStatus.Idle, handleIdle);
+  }
+};
+
+
+socket.on("backend_generate_text_response", (text: string) => {
+      Print("Received text from backend: " + text);
+      // Generate TTS url
+      const url = googleTTS.getAudioUrl(text, {
+        lang: 'fi',
+        slow: false,
+        host: 'https://translate.google.com',
+      });
+    
+      const resource = createAudioResource(url);
+      audioQueue.push(resource);
+      if (audioQueue.length === 1) {
+        player.play(resource);
+      }
+
+});
+
+const tryToSend = async (channel: TextChannel, msg: string, author: User) => {
   const name = channel.guild.name;
 
   if (typeof channel !== "undefined") {
-    const message = await channel.send(msg);
-    if(saveIt){
-      addMessage(message.id);
-
-    }
+    channel.send(msg);
   } else {
     Print(
       "On server: " +
@@ -108,14 +135,21 @@ export default (client: Client): void => {
     CheckForGoodWords(msg.content, msg.author, msg.guild);
 
     if(msg.content.toLowerCase().startsWith("perjantai")) {
-      const chatChannel = await fetchTextChannel(guild.id);
-      // find bot with the name of Maanantai and ping it with the message
-      const whatWrite = "<@587376125295067166>" + msg.content?.replace("perjantai", "");
-
-      if (chatChannel) {
-        const channel = client.channels.cache.get(chatChannel) as TextChannel;
-        tryToSend(channel, whatWrite, author, true);
+      const connection = getVoiceConnection(msg.guild.id);
+    
+      player.on(AudioPlayerStatus.Idle, handleIdle);
+    
+      if (connection) {
+        connection.subscribe(player);
       }
+      
+      let content = msg.content;
+      if (content.length > 200) {
+        content = content.substring(0, 200);
+      }
+
+      socket.emit("backend_generate_text", content);
+      Print("tried to emit a message to backend");
     }
 
     // do some loop here idk its been too long

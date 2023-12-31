@@ -17,4 +17,8 @@ const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(
   }
 );
 
+socket.on("connect", () => {
+  console.log("Connected to backend");
+}); 
+
 export default socket;
