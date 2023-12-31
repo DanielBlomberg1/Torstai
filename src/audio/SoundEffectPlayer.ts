@@ -27,3 +27,4 @@ export const PlayResource = (guild: Guild, resource: AudioResource) => {
 export const PlayerStopPlaying = () => {
   player.stop(true);
 };
+
