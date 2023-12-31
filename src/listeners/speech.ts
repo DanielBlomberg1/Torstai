@@ -9,9 +9,14 @@ import { audioclips } from "../utils/audioclips";
 import CheckForBadWords from "../utils/CheckForBadWords";
 import { OffenceEnum } from "../Database/schemas/offencesmodel.types";
 import CheckForGoodWords from "../utils/CheckForGoodWords";
-import { AudioPlayerStatus, AudioResource, createAudioResource, getVoiceConnection } from "@discordjs/voice";
+import {
+  AudioPlayerStatus,
+  AudioResource,
+  createAudioResource,
+  getVoiceConnection,
+} from "@discordjs/voice";
 
-import * as googleTTS from 'google-tts-api';
+import * as googleTTS from "google-tts-api";
 import socket from "../utils/socket";
 
 const audioQueue: AudioResource[] = [];
@@ -22,34 +27,10 @@ const handleIdle = () => {
     player.play(audioQueue[0]);
   } else {
     player.off(AudioPlayerStatus.Idle, handleIdle);
-      }
+  }
 };
 
-player.on(AudioPlayerStatus.Idle, handleIdle);  
-
-socket.on("backend_generate_text_response", (text: string) => {
-      Print("Received text from backend: " + text);
-
-      if(text.length > 200) {
-        text = text.substring(0, 200);
-      }
-
-      // Generate TTS url
-      const url = googleTTS.getAudioUrl(text, {
-        lang: 'fi',
-        slow: false,
-        host: 'https://translate.google.com',
-      });
-
-      console.log("URL: ", url);
-
-      const resource = createAudioResource(url);
-      audioQueue.push(resource);
-      if (audioQueue.length === 1) {
-        player.play(resource);
-      }
-      player.play(resource);
-});
+player.on(AudioPlayerStatus.Idle, handleIdle);
 
 const tryToSend = async (channel: TextChannel, msg: string, author: User) => {
   const name = channel.guild.name;
@@ -135,14 +116,38 @@ export default (client: Client): void => {
     );
     CheckForGoodWords(msg.content, msg.author, msg.guild);
 
-    if(msg.content.toLowerCase().startsWith("perjantai")) {    
+    if (msg.content.toLowerCase().startsWith("perjantai")) {
       const connection = getVoiceConnection(guild.id);
 
       if (connection) {
         connection.subscribe(player);
       }
 
-      socket.emit("backend_generate_text", msg.content.replace("perjantai", "").trimStart() + "\n");
+      socket.emit(
+        "backend_generate_text",
+        msg.content.replace("perjantai", "").trimStart() + "\n",
+        (text: string) => {
+          Print("Received text from backend: " + text);
+
+          if (text.length > 200) {
+            text = text.substring(0, 200);
+          }
+
+          // Generate TTS url
+          const url = googleTTS.getAudioUrl(text, {
+            lang: "fi",
+            slow: false,
+            host: "https://translate.google.com",
+          });
+
+          const resource = createAudioResource(url);
+          audioQueue.push(resource);
+          if (audioQueue.length === 1) {
+            player.play(resource);
+          }
+          player.play(resource);
+        }
+      );
       Print("tried to emit a message to backend");
     }
 
@@ -159,4 +164,3 @@ export default (client: Client): void => {
     Print(msg.author.username + ": " + msg.content);
   });
 };
-
